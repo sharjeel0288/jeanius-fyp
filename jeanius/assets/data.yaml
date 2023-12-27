@@ -1,0 +1,76 @@
+names:
+- back left pocket
+- back left pocket badge 1
+- back left pocket bottombutton
+- back left pocket button
+- back left pocket topbutton
+- back pocket emb 1
+- back pocket style
+- back right pocket
+- back right pocket badge 1
+- back right pocket badge 2
+- back right pocket badge card
+- back right pocket button
+- backbelt loop 1
+- backbelt loop 2
+- backbelt loop 3
+- backbelt loop 4
+- backbeltwidth
+- backfly
+- belt badge
+- belt style
+- card
+- coin pocket badge
+- damage
+- decoration
+- embroidery
+- fly
+- front belt loop 1
+- front belt loop 2
+- front belt loop 3
+- front belt loop 4
+- front beltwidth
+- front fly
+- front fly j
+- front fly zip
+- front left design zipperpocket
+- front left leg style 1
+- front left pocket
+- front left pocket bottombutton
+- front left pocket top button
+- front right leg style 1
+- front right pocket
+- front right pocket bottom button
+- front right pocket top button
+- jeans
+- left calf pocket
+- left coin pocket
+- left coin pocket badge 1
+- left coin pocket left button
+- left coin pocket right button
+- left thigh pocket
+- main button
+- main button hole
+- print style
+- right calf pocket
+- right coin pocket
+- right thigh pocket
+- rightcoin pocket left button
+- stripe
+- style
+- style zip 1
+- tag
+- text embroidory
+- yoke
+- zip
+- zip button 1
+nc: 65
+roboflow:
+  license: CC BY 4.0
+  project: jeans-pants
+  url: https://universe.roboflow.com/jeanius-digital/jeans-pants/dataset/7
+  version: 7
+  workspace: jeanius-digital
+test: ../test/images
+train: jeans-pants-7/train/images
+val: jeans-pants-7/valid/images
