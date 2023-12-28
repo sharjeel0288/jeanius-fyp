@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { MdInfoOutline, MdUpload } from 'react-icons/md';
-import { Badge, Box, Button, Container, Flex, Grid, Heading, Image, Input, SimpleGrid, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr, VStack, useColorModeValue } from '@chakra-ui/react';
+import { Badge, Box, Button, Container, Flex, Grid, Heading, Image, Input, SimpleGrid, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr, VStack, useColorModeValue, useToast } from '@chakra-ui/react';
 import Details from './Details';
 import Drawers from './Drawer';
 import { SlReload } from 'react-icons/sl';
@@ -71,18 +71,40 @@ const Layout = () => {
   // };
   const [loading, setLoading] = useState(false);
   const [colorMatchingData, setcolorMatchingData] = useState(null);
+  const toast=useToast()
   const handleStartProcessing = async () => {
     try {
-      setLoading(true); // Set loading to true before making the API call
+      setLoading(true);
+
       const blobImage1 = await fetch(selectedImage1).then((res) => res.blob());
       const blobImage2 = await fetch(selectedImage2).then((res) => res.blob());
       const result = await calculateImageSimilarity(blobImage1, blobImage2);
+
       setcolorMatchingData(result);
-      // Update state or perform any other actions with the result
+
+      // Show success toast
+      toast({
+        title: 'Processing Successful',
+        description: 'Image similarity calculated successfully.',
+        status: 'success',
+        duration: 5000,
+        position:'top-right',
+        isClosable: true,
+      });
     } catch (error) {
       // Handle errors
+
+      // Show error toast
+      toast({
+        title: 'Error Processing Image',
+        description: 'An error occurred while calculating image similarity.',
+        status: 'error',
+        duration: 5000,
+        position:'top-right',
+        isClosable: true,
+      });
     } finally {
-      setLoading(false); // Set loading back to false after the API call is complete
+      setLoading(false);
     }
   };
 

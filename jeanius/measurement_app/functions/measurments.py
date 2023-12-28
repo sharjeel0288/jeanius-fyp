@@ -32,60 +32,59 @@ def predict_on_image(model, img, conf):
 
 
 def calculate_measurements(mask, ref_height_pixels, ref_height_cm):
-    # Find contours in the binary mask
-    contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    try:
+        # Find contours in the binary mask
+        contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    if not contours:
-        raise Exception("No contours found.")
+        if not contours:
+            raise ValueError("No contours found.")
 
-    # Combine all individual contours into a single contour
-    combined_contour = np.concatenate(contours)
+        # Combine all individual contours into a single contour
+        combined_contour = np.concatenate(contours)
 
-    # Calculate the minimum bounding rectangle of the combined contour
-    rect = cv2.minAreaRect(combined_contour)
-    area = cv2.contourArea(combined_contour)
-    perimeter = cv2.arcLength(combined_contour, True)
+        # Calculate the minimum bounding rectangle of the combined contour
+        rect = cv2.minAreaRect(combined_contour)
+        area = cv2.contourArea(combined_contour)
+        perimeter = cv2.arcLength(combined_contour, True)
 
-    # Get the coordinates of the rectangle vertices
-    box = cv2.boxPoints(rect)
-    box = np.int0(box)
+        # Get the coordinates of the rectangle vertices
+        box = cv2.boxPoints(rect)
+        box = np.int0(box)
 
-    # Calculate midpoints
-    mid_x = int((box[0][0] + box[2][0]) / 2)
-    mid_y = int((box[0][1] + box[2][1]) / 2)
+        # Calculate midpoints
+        mid_x = int((box[0][0] + box[2][0]) / 2)
+        mid_y = int((box[0][1] + box[2][1]) / 2)
 
-    # Measure distances in different directions
-    distances_pixels = [np.linalg.norm(np.array([mid_x, mid_y]) - np.array(point)) for point in box]
+        # Measure distances in different directions
+        distances_pixels = [np.linalg.norm(np.array([mid_x, mid_y]) - np.array(point)) for point in box]
 
-    # Convert pixel distances to centimeters
-    pixel_to_cm_factor = ref_height_cm / ref_height_pixels
-    distances_cm = [distance * pixel_to_cm_factor for distance in distances_pixels]
+        # Convert pixel distances to centimeters
+        pixel_to_cm_factor = ref_height_cm / ref_height_pixels
+        distances_cm = [distance * pixel_to_cm_factor for distance in distances_pixels]
 
-    # Sort distances in descending order
-    sorted_distances_indices = np.argsort(distances_cm)[::-1]
-    max_distances_cm = [distances_cm[i] for i in sorted_distances_indices[:3]]
+        # Sort distances in descending order
+        sorted_distances_indices = np.argsort(distances_cm)[::-1]
+        max_distances_cm = [distances_cm[i] for i in sorted_distances_indices[:3]]
 
-    # Additional points for length measurements
-    length_points = [tuple(box[0]), tuple(box[2])]
-    length_distances_pixels = [np.linalg.norm(np.array([mid_x, mid_y]) - np.array(point)) for point in length_points]
-    length_distances_cm = [distance * pixel_to_cm_factor for distance in length_distances_pixels]
+        # Additional points for length measurements
+        length_points = [tuple(box[0]), tuple(box[2])]
+        length_distances_pixels = [np.linalg.norm(np.array([mid_x, mid_y]) - np.array(point)) for point in length_points]
+        length_distances_cm = [distance * pixel_to_cm_factor for distance in length_distances_pixels]
 
-    # Diagonal distances
-    diagonal_distances_pixels = [np.linalg.norm(np.array(box[0]) - np.array(box[2])),
-                                 np.linalg.norm(np.array(box[1]) - np.array(box[3]))]
-    diagonal_distances_cm = [distance * pixel_to_cm_factor for distance in diagonal_distances_pixels]
+        # Diagonal distances
+        diagonal_distances_pixels = [np.linalg.norm(np.array(box[0]) - np.array(box[2])),
+                                     np.linalg.norm(np.array(box[1]) - np.array(box[3]))]
+        diagonal_distances_cm = [distance * pixel_to_cm_factor for distance in diagonal_distances_pixels]
 
-    # # Visualize the measurements (you can modify this part based on your requirements)
-    # visualization = np.zeros_like(mask)
-    # cv2.drawContours(visualization, [box], 0, 255, 2)
+        # Return the calculated measurements
+        return mid_x, mid_y, rect[1][0] * pixel_to_cm_factor, rect[1][1] * pixel_to_cm_factor, \
+               max_distances_cm, length_distances_cm, length_points, diagonal_distances_cm, area, perimeter
 
-    # # Display the visualization (you can use this for debugging or further analysis)
-    # cv2.imshow("Visualization", visualization)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
-    return mid_x, mid_y, rect[1][0] * pixel_to_cm_factor, rect[1][1] * pixel_to_cm_factor, max_distances_cm, length_distances_cm, length_points, diagonal_distances_cm, area,perimeter
-
+    except Exception as e:
+        # Catch any exceptions and raise a ValueError with an appropriate message
+        raise ValueError(f"Error in calculate_measurements: {str(e)}")
+    
+    
 def scale_image(target_shape, image, original_shape):
     # Rescale the mask to the original image shape
     scale_factor = (original_shape[1] / target_shape[1], original_shape[0] / target_shape[0])
