@@ -79,6 +79,7 @@ const Layout = () => {
     const handleStartProcessing = async () => {
         try {
             setLoading(true);
+            setIsLoaded(false);
             setIsProcessing(true);
 
             const blobImage1 = await fetch(selectedImage1).then((res) => res.blob());
@@ -253,7 +254,7 @@ const Layout = () => {
                 )}
             </Box>
             {isProcessing && (
-                <Skeleton isLoaded={isloaded}>
+                <Skeleton isLoaded={isloaded} startColor='purple.200' endColor='purple.300' fadeDuration={0.6}>
                     <Box
                         bg={useBgColor}
                         p={4}
