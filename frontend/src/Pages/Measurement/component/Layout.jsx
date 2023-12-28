@@ -62,7 +62,6 @@ const Layout = () => {
     }
   };
   const [measurementResult, setMeasurementResult] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [btnLoading, setBtnLoading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isloaded, setIsLoaded] = useState(false);
@@ -121,7 +120,6 @@ const Layout = () => {
       });
       setIsProcessing(false);
     } finally {
-      setIsLoading(false); // Set loading state to false after processing
       setBtnLoading(false);
     }
   };
@@ -201,18 +199,24 @@ const Layout = () => {
             </Button>
           )}
         </Box>
-        <Box flex={4}>
-          {/* <ImageUpload /> */}
-
-          {isProcessing && measurementResult && (
-            <Skeleton isLoaded={isloaded}>
-              <Results
-                imgSelected={selectedImage}
-                measurementsData={measurementResult}
-              />
-            </Skeleton>
-          )}
-        </Box>
+        {isProcessing && (
+          <Skeleton
+            isLoaded={isloaded}
+            startColor="purple.200"
+            endColor="purple.300"
+            fadeDuration={0.6}
+          >
+            <Box flex={4}>
+              {/* <ImageUpload /> */}
+              {measurementResult && (
+                <Results
+                  imgSelected={selectedImage}
+                  measurementsData={measurementResult}
+                />
+              )}
+            </Box>
+          </Skeleton>
+        )}
       </Flex>
 
       {/* <Drawers isOpen={isDrawerOpen} onClose={handleDrawerClose} /> */}
