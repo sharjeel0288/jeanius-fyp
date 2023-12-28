@@ -74,14 +74,9 @@ const Layout = () => {
   const handleStartProcessing = async () => {
     try {
       setLoading(true); // Set loading to true before making the API call
-
-      console.log("---------------------");
       const blobImage1 = await fetch(selectedImage1).then((res) => res.blob());
       const blobImage2 = await fetch(selectedImage2).then((res) => res.blob());
-
       const result = await calculateImageSimilarity(blobImage1, blobImage2);
-
-      console.log("API Result:", result);
       setcolorMatchingData(result);
       // Update state or perform any other actions with the result
     } catch (error) {
