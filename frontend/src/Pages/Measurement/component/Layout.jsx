@@ -25,7 +25,7 @@ import {
 import Results from "./Results";
 import { SlReload } from "react-icons/sl";
 import { PiImageSquareFill } from "react-icons/pi";
-import { useBgColor } from "../../../utils/constants";
+import { useBgColor, usePlaceholderColor } from "../../../utils/constants";
 
 const Layout = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -282,7 +282,7 @@ const handleSubmitButtonClick = async () => {
           borderRadius="lg"
           p={4}
           minW="20%"
-          maxH="400px"
+          maxH="450px"
           minH="400px"
           flex={1}
         >
@@ -327,7 +327,9 @@ const handleSubmitButtonClick = async () => {
               value={cmValue}
               onChange={handleMeasurementChange}
               placeholder="Enter length in cm"
-              style={{ marginTop: '10px' }}
+              mt={4}
+              borderColor="purple.500"
+              _placeholder={{ color: usePlaceholderColor }}
             />
           )}
           {selectedImage && (
