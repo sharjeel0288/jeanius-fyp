@@ -7,6 +7,7 @@ import Measurements from './Pages/Measurement/Measurements';
 import { useState } from 'react';
 import Users from './Pages/users/Users';
 import Login from './Pages/Login/Login';
+import ColorMatchingTemp from './Pages/ColorMatchingTemp/ColorMatchingTemp';
 // ... other imports
 
 function App() {
@@ -38,7 +39,8 @@ function App() {
           <Route path='/' element={<Navigate to="/sign-in" />} />
           <Route path='/sign-in' element={<Login />} />
           <Route path='/dashboard' element={<DashBoard sideBarWidth={sideBarWidth} />} />
-          <Route path='/color-matching' element={<ColorMatching sideBarWidth={sideBarWidth} />} />
+          <Route path='/color-matching-future' element={<ColorMatching sideBarWidth={sideBarWidth} />} />
+          <Route path='/color-matching' element={<ColorMatchingTemp sideBarWidth={sideBarWidth} />} />
           <Route path='/measurements' element={<Measurements sideBarWidth={sideBarWidth} />} />
           <Route path='/users' element={<Users sideBarWidth={sideBarWidth} />} />
           <Route path='/*' element={<DashBoard />} />

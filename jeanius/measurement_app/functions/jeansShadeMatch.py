@@ -1,21 +1,14 @@
 # measurement_app\functions\jeansShadeMatch.py
-import base64
-from matplotlib import colors
-import matplotlib.pyplot as plt
-
-import pandas as pd
 import numpy as np
 import cv2
 from skimage.metrics import structural_similarity as ssim
-from sklearn.cluster import KMeans
+from skimage.color import deltaE_cie76, deltaE_ciede2000
+import numpy as np
+import cv2
 from PIL import Image
-import os
 from distutils.version import StrictVersion
 import tensorflow as tf
-from termcolor import colored
-from skimage.feature import match_template
-from skimage.color import rgb2lab, deltaE_cie76, deltaE_ciede2000
-from object_detection.utils import ops as utils_ops
+from skimage.color import deltaE_cie76, deltaE_ciede2000
 
 
 def color_match_function(image1, image2):
@@ -23,8 +16,8 @@ def color_match_function(image1, image2):
     if StrictVersion(tf.__version__) < StrictVersion("1.12.0"):
         raise ImportError("Please upgrade your TensorFlow installation to v1.12.*.")
 
-    # Load object detection graph f'assets/data.yaml'
-    PATH_TO_FROZEN_GRAPH = f"measurement_app/assets/frozen_inference_graph.pb"
+    # Load object detection graph
+    PATH_TO_FROZEN_GRAPH = f'assets/frozen_inference_graph.pb'
     detection_graph = tf.Graph()
 
     with detection_graph.as_default():
@@ -33,13 +26,6 @@ def color_match_function(image1, image2):
             serialized_graph = fid.read()
             od_graph_def.ParseFromString(serialized_graph)
             tf.import_graph_def(od_graph_def, name="")
-
-    # Function to load image into numpy array
-    def load_image_into_numpy_array(image):
-        (im_width, im_height) = image.size
-        return (
-            np.array(image.getdata()).reshape((im_height, im_width, 3)).astype(np.uint8)
-        )
 
     def detect_objects(image_np, detection_graph):
         # Convert the NumPy array to a PIL Image object
@@ -91,66 +77,6 @@ def color_match_function(image1, image2):
                 boxes = boxes.astype(np.int32)
 
                 return boxes, classes
-
-    def extract_roi(image, bounding_box):
-        x, y, w, h = bounding_box
-        roi = image[y : y + h, x : x + w]  # Extract the ROI from the bounding box
-
-        return roi
-
-    def load_image(image_path):
-        try:
-            image = cv2.imread(image_path)
-            if image is not None:
-                return image
-            else:
-                raise FileNotFoundError(f"Image not found at path: {image_path}")
-        except Exception as e:
-            raise Exception(f"Error loading image: {str(e)}")
-
-    def resize_image(image, target_size=(100, 100)):
-        return cv2.resize(image, target_size, interpolation=cv2.INTER_AREA)
-
-    def quantize_image(image, num_colors=64):
-        # Convert the image to the LAB color space
-        lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
-        # Reshape the image to be a list of pixels
-        reshaped_image = lab_image.reshape((-1, 3))
-        # Apply k-means clustering to find 'num_colors' dominant colors
-        kmeans = KMeans(n_clusters=num_colors)
-        labels = kmeans.fit_predict(reshaped_image)
-        # Replace pixel values with their corresponding cluster centers
-        quantized_image_lab = kmeans.cluster_centers_.astype(np.uint8)[labels]
-        # Reshape the quantized image back to the original shape in LAB color space
-        quantized_image_lab = quantized_image_lab.reshape(lab_image.shape)
-        # Convert quantized LAB image back to BGR color space
-        quantized_image = cv2.cvtColor(quantized_image_lab, cv2.COLOR_LAB2BGR)
-
-        return quantized_image
-
-    def resize_or_pad_image(image, target_size=(100, 100)):
-        # Get the original image dimensions
-        height, width = image.shape[:2]
-
-        # Ensure target size is a valid positive value
-        target_height, target_width = max(1, target_size[0]), max(1, target_size[1])
-
-        # Calculate padding or resizing dimensions
-        pad_height = max(0, target_height - height)
-        pad_width = max(0, target_width - width)
-
-        # Pad the image with zeros or resize the image
-        if height < target_height or width < target_width:
-            # Pad the image with zeros
-            padded_image = np.zeros((target_height, target_width, 3), dtype=np.uint8)
-            padded_image[:height, :width, :] = image
-            return padded_image, (pad_height, pad_width)
-        else:
-            # Resize the image
-            resized_image = cv2.resize(
-                image, (target_width, target_height), interpolation=cv2.INTER_AREA
-            )
-            return resized_image, (pad_height, pad_width)
 
     def calculate_color_similarity(image1, image2):
         quantized_image1 = image1
@@ -206,8 +132,8 @@ def color_match_function(image1, image2):
 
             return similarity_percentage
         except Exception as e:
-            print(f"Error: {str(e)}")
-            return 0  # Return 0 in case of an error
+            raise Exception(f"Error: {str(e)}")
+           
 
     def extract_color_histogram(image):
         # Convert the image to the HSV color space
@@ -221,11 +147,9 @@ def color_match_function(image1, image2):
 
         return hist
 
-    def compare_color_histograms(
-        resized_jeans_roi_1, resized_jeans_roi_2, threshold=0.7
-    ):
-        hist_1 = extract_color_histogram(resized_jeans_roi_1)
-        hist_2 = extract_color_histogram(resized_jeans_roi_2)
+    def compare_color_histograms(process_image1, process_image2, threshold=0.7):
+        hist_1 = extract_color_histogram(process_image1)
+        hist_2 = extract_color_histogram(process_image2)
         # Compute the Bhattacharyya distance between the histograms
         bhattacharyya_distance = cv2.compareHist(
             hist_1, hist_2, cv2.HISTCMP_BHATTACHARYYA
@@ -260,62 +184,10 @@ def color_match_function(image1, image2):
 
             return color_differences
         except Exception as e:
-            print(f"Error: {str(e)}")
-            return False
-
-    def jeans_color_matching_roi(roi1, roi2):
-        try:
-            # Calculate color correlations
-            corr_r, corr_g, corr_b = calculate_correlation_roi(roi1, roi2)
-
-            # Calculate overall color similarity as the average of individual channel correlations
-            overall_similarity = (corr_r + corr_g + corr_b) / 3
-
-            # Threshold for considering ROIs as color-matched
-            threshold_similarity = 0.8
-
-            # Perform color matching based on the overall color similarity
-            return overall_similarity
-            # if overall_similarity >= threshold_similarity:
-            #     return "Jeans color matched!"
-            # else:
-            #     return "Jeans color not matched."
-
-        except Exception as e:
-            print(f"Error: {str(e)}")
-            return "Error in color matching."
+            raise Exception(f"Error: {str(e)}")
+         
 
     # Function to calculate color correlations for ROIs
-    def calculate_correlation_roi(roi1, roi2):
-        try:
-            # Calculate histograms for each channel (R, G, B) for the ROIs
-            hist_roi1_r = cv2.calcHist([roi1], [0], None, [256], [0, 256])
-            hist_roi1_g = cv2.calcHist([roi1], [1], None, [256], [0, 256])
-            hist_roi1_b = cv2.calcHist([roi1], [2], None, [256], [0, 256])
-
-            hist_roi2_r = cv2.calcHist([roi2], [0], None, [256], [0, 256])
-            hist_roi2_g = cv2.calcHist([roi2], [1], None, [256], [0, 256])
-            hist_roi2_b = cv2.calcHist([roi2], [2], None, [256], [0, 256])
-
-            # Normalize histograms
-            hist_roi1_r /= hist_roi1_r.sum()
-            hist_roi1_g /= hist_roi1_g.sum()
-            hist_roi1_b /= hist_roi1_b.sum()
-
-            hist_roi2_r /= hist_roi2_r.sum()
-            hist_roi2_g /= hist_roi2_g.sum()
-            hist_roi2_b /= hist_roi2_b.sum()
-
-            # Calculate color correlations
-            corr_r = cv2.compareHist(hist_roi1_r, hist_roi2_r, cv2.HISTCMP_CORREL)
-            corr_g = cv2.compareHist(hist_roi1_g, hist_roi2_g, cv2.HISTCMP_CORREL)
-            corr_b = cv2.compareHist(hist_roi1_b, hist_roi2_b, cv2.HISTCMP_CORREL)
-
-            return corr_r, corr_g, corr_b
-
-        except Exception as e:
-            print(f"Error: {str(e)}")
-            return 0.0, 0.0, 0.0
 
     def calculate_channel_mse(image1, image2):
         mse_r = np.mean((image1[:, :, 0] - image2[:, :, 0]) ** 2)
@@ -388,34 +260,6 @@ def color_match_function(image1, image2):
 
         return avg_color_deviation
 
-    def calculate_edge_similarity(image1, image2):
-        # Convert images to grayscale
-        gray_image1 = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY)
-        gray_image2 = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
-
-        # Apply Canny edge detector
-        edges1 = cv2.Canny(gray_image1, 50, 150)
-        edges2 = cv2.Canny(gray_image2, 50, 150)
-
-        # Calculate edge similarity using SSIM
-        edge_ssim, _ = ssim(edges1, edges2, full=True)
-
-        return edge_ssim
-
-    def calculate_euclidean_distance_lab(image_lab_1, image_lab_2):
-        # Flatten the LAB images
-        flat_lab_1 = image_lab_1.reshape((-1,))
-        flat_lab_2 = image_lab_2.reshape((-1,))
-
-        # Ensure both flattened arrays have the same shape
-        if flat_lab_1.shape != flat_lab_2.shape:
-            raise ValueError("Flattened LAB arrays have different shapes.")
-
-        # Calculate Euclidean distance
-        euclidean_distance = np.linalg.norm(flat_lab_1 - flat_lab_2)
-
-        return euclidean_distance
-
     def calculate_ciede2000_color_difference(image_lab_1, image_lab_2):
         # Ensure both LAB images have the same shape
         if image_lab_1.shape != image_lab_2.shape:
@@ -429,46 +273,93 @@ def color_match_function(image1, image2):
     def calculate_bhattacharyya_distance(hist_1, hist_2):
         return cv2.compareHist(hist_1, hist_2, cv2.HISTCMP_BHATTACHARYYA)
 
-    def overall_correlation(corr_r, corr_g, corr_b):
-        return (corr_r + corr_g + corr_b) / 3
-
     def calculate_color_delta_lab(color_lab1, color_lab2):
         delta_lab = np.linalg.norm(color_lab1 - color_lab2)
         return delta_lab
 
+    def process_image(img):
+        # Read the image
+        original = img.copy()
+
+        # Convert the image to the LAB color space
+        lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
+
+        # Extract the L channel (lightness) to separate color information from intensity
+        l_channel = lab[:, :, 0]
+
+        # Apply GaussianBlur to the L channel to reduce noise
+        blurred = cv2.GaussianBlur(l_channel, (5, 5), 0)
+
+        # Use adaptive thresholding to create a binary mask
+        _, mask = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+        # Invert the mask to get the foreground
+        mask = cv2.bitwise_not(mask)
+
+        # Bitwise AND to keep the region of interest
+        result = cv2.bitwise_and(original, original, mask=mask)
+
+        # Check if the image has an alpha channel
+        if result.shape[2] == 4:
+            # If the alpha channel exists, split it
+            alpha_channel = cv2.split(result)[3]
+        else:
+            # If the alpha channel doesn't exist, create one with full opacity
+            alpha_channel = np.ones_like(mask) * 255
+        return result
+
+    def resize_or_pad_image(image, target_size=(100, 100)):
+        # Get the original image dimensions
+        height, width = image.shape[:2]
+
+        # Ensure target size is a valid positive value
+        target_height, target_width = max(1, target_size[0]), max(1, target_size[1])
+
+        # Calculate padding or resizing dimensions
+        pad_height = max(0, target_height - height)
+        pad_width = max(0, target_width - width)
+
+        # Pad the image with zeros or resize the image
+        if height < target_height or width < target_width:
+            # Pad the image with zeros
+            padded_image = np.zeros((target_height, target_width, 3), dtype=np.uint8)
+            padded_image[:height, :width, :] = image
+            return padded_image, (pad_height, pad_width)
+        else:
+            # Resize the image without blurring
+            resized_image = cv2.resize(
+                image, (target_width, target_height), interpolation=cv2.INTER_NEAREST
+            )
+            return resized_image, (pad_height, pad_width)
+
     # image_1_np = cv2.imread(image1)
     # image_1_np = cv2.imread(image1)
-    image_1_np = image1
-    image_2_np = image2
+    # Example usage
+    
 
-    boxes_1, classes_1 = detect_objects(image_1_np, detection_graph)
-    boxes_2, classes_2 = detect_objects(image_2_np, detection_graph)
-    print("-----------------------------------------------")
-    print(classes_1)
-    x1, y1, width1, height1 = boxes_1[0]
-    x2, y2, width2, height2 = boxes_2[0]
-    jeans_roi_1 = extract_roi(
-        image_1_np,
-        (x1, y1, width1, height1),
+    img1 = image1
+    img2 =image2
+    boxes_1, classes_1 = detect_objects(img1, detection_graph)
+    boxes_2, classes_2 = detect_objects(img2, detection_graph)
+
+    if len(boxes_2) == 0 or len(boxes_2) == 0:
+        raise  Exception("Error Jeans not Found")
+
+    process_image1 = process_image(img1)
+    process_image2 = process_image(img2)
+    resized_jeans_roi_1, (pad_height_1, pad_width_1) = resize_or_pad_image(
+        process_image1
     )
-    jeans_roi_2 = extract_roi(
-        image_2_np,
-        (x2, y2, width2, height2),
+    resized_jeans_roi_2, (pad_height_2, pad_width_2) = resize_or_pad_image(
+        process_image2
     )
 
-    # boxes_1, classes_1 = detect_objects(image_path_1, detection_graph)
-    # x1, y1, width1, height1 = boxes_1[0]
-    # image_1 = load_image(image_path_1)
-    # jeans_roi_1 = extract_roi(image_1, (x1, y1, width1, height1),detection_graph)
+    # cv2.namedWindow('Result Image with Transparency', cv2.WINDOW_NORMAL)
+    # cv2.resizeWindow('Result Image with Transparency', 800, 600)  # Adjust the size as needed
 
-    # boxes_2, classes_2 = detect_objects(image_path_2, detection_graph)
-    # x2, y2, width2, height2 = boxes_2[0]
-    # image_2 = load_image(image_path_2)
-    # jeans_roi_2 = extract_roi(image_2, (x2, y2, width2, height2),detection_graph)
-
-    resized_jeans_roi_1, (pad_height_1, pad_width_1) = resize_or_pad_image(jeans_roi_1)
-    resized_jeans_roi_2, (pad_height_2, pad_width_2) = resize_or_pad_image(jeans_roi_2)
-
+    # cv2.imshow('Result Image with Transparency', resized_jeans_roi_2)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
     # Calculate various similarity scores
     color_similarity_score = calculate_color_similarity(
         resized_jeans_roi_1, resized_jeans_roi_2
@@ -479,24 +370,20 @@ def color_match_function(image1, image2):
     color_shade_differences = compare_color_shades(
         resized_jeans_roi_1, resized_jeans_roi_2
     )
-    jeans_color_matching_result = jeans_color_matching_roi(
-        resized_jeans_roi_1, resized_jeans_roi_2
-    )
+
     channel_mse_scores = calculate_channel_mse(resized_jeans_roi_1, resized_jeans_roi_2)
     color_balance_match_score = calculate_color_balance_match_score(
         resized_jeans_roi_1, resized_jeans_roi_2
     )
     saturation_difference_score = calculate_saturation_difference(
-        convert_to_lab(jeans_roi_1), convert_to_lab(jeans_roi_2)
-    )
-    euclidean_distance_lab = calculate_euclidean_distance_lab(
         convert_to_lab(resized_jeans_roi_1), convert_to_lab(resized_jeans_roi_2)
     )
+
     average_color_deviation = calculate_average_color_deviation(
         resized_jeans_roi_1, resized_jeans_roi_2
     )
     luminance_difference_score = calculate_luminance_difference(
-        convert_to_lab(jeans_roi_1), convert_to_lab(jeans_roi_2)
+        convert_to_lab(resized_jeans_roi_1), convert_to_lab(resized_jeans_roi_2)
     )
     ciede2000_color_difference = calculate_ciede2000_color_difference(
         convert_to_lab(resized_jeans_roi_1), convert_to_lab(resized_jeans_roi_2)
@@ -505,36 +392,138 @@ def color_match_function(image1, image2):
         extract_color_histogram(resized_jeans_roi_1),
         extract_color_histogram(resized_jeans_roi_2),
     )
-    corr_r, corr_g, corr_b = calculate_correlation_roi(
-        resized_jeans_roi_1, resized_jeans_roi_2
-    )
-    overall_correlation_score = overall_correlation(
-        *calculate_correlation_roi(resized_jeans_roi_1, resized_jeans_roi_2)
-    )
+
     color_delta_lab = calculate_color_delta_lab(
         convert_to_lab(resized_jeans_roi_1).mean(axis=(0, 1)),
         convert_to_lab(resized_jeans_roi_2).mean(axis=(0, 1)),
     )
-    # # Print the results with informative hints
-    # image1_base64 = base64.b64encode(image1.tobytes()).decode('utf-8')
-    # image2_base64 = base64.b64encode(image2.tobytes()).decode('utf-8')
-    # with open('image_data.txt', 'w') as file:
-    #     file.write(f"Image 1 Base64:\n{image1_base64}\n\n")
-    #     file.write(f"Image 2 Base64:\n{image2_base64}\n\n")
+
+    # NORMALIZING
+
+    # MAX VALUE
+    max_color_similarity_score = 50.00180667 + 10
+    max_color_histogram_bhattacharyya_distance = 0.543439368 + 10
+    max_color_shade_differences = 23.5395651 + 10
+    max_channel_mse_scores = 38.8839 + 10
+    max_color_balance_match_score = 0.007575396 + 10
+    max_saturation_difference_score = 7.095273074 + 10
+    max_average_color_deviation = 65.6327 + 10
+    max_luminance_difference_score = 23.1958 + 10
+    max_ciede2000_color_difference = 20.81719644 + 10
+    max_bhattacharyya_distance_color_histograms = 0.543439368 + 10
+
+    # MIN VALUES
+    min_color_similarity_score = 38.87341442
+    min_color_histogram_bhattacharyya_distance = 0
+    min_color_shade_differences = 0
+    min_channel_mse_scores = 0
+    min_color_balance_match_score = 0.004562184
+    min_saturation_difference_score = 0
+    min_average_color_deviation = 0
+    min_luminance_difference_score = 0
+    min_ciede2000_color_difference = 0
+    min_bhattacharyya_distance_color_histograms = 0
+
+    def normalize_score(score, min_val, max_val):
+        # Ensure max_val is not equal to min_val to avoid division by zero
+        if max_val == min_val:
+            return 0.0
+        return (score - min_val) / (max_val - min_val)
+
+    normalized_color_similarity_score = normalize_score(
+        color_similarity_score, min_color_similarity_score, max_color_similarity_score
+    )
+    normalized_color_histogram_bhattacharyya_distance = normalize_score(
+        color_histogram_bhattacharyya_distance,
+        min_color_histogram_bhattacharyya_distance,
+        max_color_histogram_bhattacharyya_distance,
+    )
+    normalized_color_shade_differences = normalize_score(
+        color_shade_differences,
+        min_color_shade_differences,
+        max_color_shade_differences,
+    )
+    normalized_channel_mse_scores = normalize_score(
+        np.mean(channel_mse_scores[:3]), min_channel_mse_scores, max_channel_mse_scores
+    )
+    normalized_color_balance_match_score = normalize_score(
+        color_balance_match_score,
+        min_color_balance_match_score,
+        max_color_balance_match_score,
+    )
+    normalized_saturation_difference_score = normalize_score(
+        saturation_difference_score,
+        min_saturation_difference_score,
+        max_saturation_difference_score,
+    )
+    normalized_average_color_deviation = normalize_score(
+        average_color_deviation,
+        min_average_color_deviation,
+        max_average_color_deviation,
+    )
+    normalized_luminance_difference_score = normalize_score(
+        luminance_difference_score,
+        min_luminance_difference_score,
+        max_luminance_difference_score,
+    )
+    normalized_ciede2000_color_difference = normalize_score(
+        ciede2000_color_difference,
+        min_ciede2000_color_difference,
+        max_ciede2000_color_difference,
+    )
+    normalized_bhattacharyya_distance_color_histograms = normalize_score(
+        bhattacharyya_distance_color_histograms,
+        min_bhattacharyya_distance_color_histograms,
+        max_bhattacharyya_distance_color_histograms,
+    )
+
+    def calculate_weighted_similarity(normalized_metrics, weights):
+        # Ensure the number of metrics and weights match
+        if len(normalized_metrics) != len(weights):
+            raise ValueError("Number of metrics and weights must be the same.")
+
+        # Calculate the weighted similarity
+        weighted_similarity = sum(
+            normalized_metric * weight
+            for normalized_metric, weight in zip(normalized_metrics, weights)
+        )
+
+        return weighted_similarity
+
+    weights = [0.05, 0.1, 0.1, 0.2, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1]
+
+    weighted_similarity = calculate_weighted_similarity(
+        [
+            normalized_color_similarity_score,
+            normalized_color_histogram_bhattacharyya_distance,
+            normalized_color_shade_differences,
+            normalized_channel_mse_scores,
+            normalized_color_balance_match_score,
+            normalized_saturation_difference_score,
+            normalized_average_color_deviation,
+            normalized_luminance_difference_score,
+            normalized_ciede2000_color_difference,
+            normalized_bhattacharyya_distance_color_histograms,
+        ],
+        weights,
+    )
+
     return {
-        'color_similarity_score': color_similarity_score,
-        'color_histogram_bhattacharyya_distance': color_histogram_bhattacharyya_distance,
-        'color_shade_differences': color_shade_differences,
-        'channel_mse_scores': channel_mse_scores,
-        'saturation_difference_score': saturation_difference_score,
-        'euclidean_distance_lab': euclidean_distance_lab,
-        'average_color_deviation': average_color_deviation,
-        'luminance_difference_score': luminance_difference_score,
-        'ciede2000_color_difference': ciede2000_color_difference,
-        'bhattacharyya_distance_color_histograms': bhattacharyya_distance_color_histograms,
-        'corr_r': corr_r,
-        'corr_g': corr_g,
-        'corr_b': corr_b,
-        'overall_correlation_score': overall_correlation_score,
-        'color_delta_lab': color_delta_lab,
+        "color_similarity_score": round(normalized_color_similarity_score, 2),
+        "color_histogram_bhattacharyya_distance": round(
+            normalized_color_histogram_bhattacharyya_distance, 2
+        ),
+        "color_shade_differences": round(normalized_color_shade_differences, 2),
+        "channel_mse_scores_r": round(channel_mse_scores[0], 2),
+        "channel_mse_scores_g": round(channel_mse_scores[1], 2),
+        "channel_mse_scores_b": round(channel_mse_scores[2], 2),
+        "color_balance_match_score": round(normalized_color_balance_match_score, 2),
+        "saturation_difference_score": round(normalized_saturation_difference_score, 2),
+        "average_color_deviation": round(normalized_average_color_deviation, 2),
+        "luminance_difference_score": round(normalized_luminance_difference_score, 2),
+        "ciede2000_color_difference": round(normalized_ciede2000_color_difference, 2),
+        "bhattacharyya_distance_color_histograms": round(
+            bhattacharyya_distance_color_histograms, 2
+        ),
+        "Weighted_Similarity": round(1 - weighted_similarity, 2),
     }
