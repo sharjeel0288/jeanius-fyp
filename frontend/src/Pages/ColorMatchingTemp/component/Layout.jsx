@@ -110,7 +110,7 @@ const Layout = () => {
               position: 'top-right',
               isClosable: true,
             });
-            setIsProcessing(false);c
+            setIsProcessing(false);
         } finally {
             setLoading(false);
         }

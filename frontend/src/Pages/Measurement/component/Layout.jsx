@@ -203,8 +203,8 @@ const Layout = () => {
         </Box>
         <Box flex={4}>
           {/* <ImageUpload /> */}
-          
-          {isProcessing && (
+
+          {isProcessing && measurementResult && (
             <Skeleton isLoaded={isloaded}>
               <Results
                 imgSelected={selectedImage}
