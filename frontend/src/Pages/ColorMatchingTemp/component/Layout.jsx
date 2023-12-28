@@ -7,68 +7,99 @@ import { SlReload } from 'react-icons/sl';
 import { PiImageSquareFill } from 'react-icons/pi';
 import { useBgColor, useTextColor } from '../../../utils/constants';
 import { IoIosInformationCircleOutline } from "react-icons/io";
+import { calculateImageSimilarity } from '../../../api/colorMatchAPI';
 
 
 const Layout = () => {
+  // const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-    // const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  // const handleDrawerOpen = () => {
+  //     setIsDrawerOpen(true);
+  // };
 
-    // const handleDrawerOpen = () => {
-    //     setIsDrawerOpen(true);
+  // const handleDrawerClose = () => {
+  //     setIsDrawerOpen(false);
+  // };
+
+  const [selectedImage1, setSelectedImage] = useState(null);
+  const [selectedImage2, setSelectedImage2] = useState(null);
+  const fileInputRef = useRef(null);
+  const fileInputRef2 = useRef(null);
+
+  const handleImageChange1 = (event) => {
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setSelectedImage(reader.result);
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  };
+  const handleImageChange2 = (event) => {
+    const selectedFile2 = event.target.files[0];
+    if (selectedFile2) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setSelectedImage2(reader.result);
+      };
+      reader.readAsDataURL(selectedFile2);
+    }
+  };
+
+  const handleButtonClick = () => {
+    fileInputRef.current.click();
+  };
+  const handleButtonClick2 = () => {
+    fileInputRef2.current.click();
+  };
+
+  // const colorMatchingData? = {
+  //     "color_similarity_score": 42.76,
+  //     "color_histogram_bhattacharyya_distance": 0.11,
+  //     "color_shade_differences": 3.16,
+  //     "channel_mse_scores_r": 23.89,
+  //     "channel_mse_scores_g": 24.09,
+  //     "channel_mse_scores_b": 25.11,
+  //     "color_balance_match_score": 0.0,
+  //     "saturation_difference_score": 2.7,
+  //     "average_color_deviation": 29.83,
+  //     "luminance_difference_score": 3.14,
+  //     "ciede2000_color_difference": 5.27,
+  //     "bhattacharyya_distance_color_histograms": 0.11,
+  //     "Weighted_Similarity": 0.8
+  // };
+  const [loading, setLoading] = useState(false);
+  const [colorMatchingData, setcolorMatchingData] = useState(null);
+  const handleStartProcessing = async () => {
+    try {
+      console.log("---------------------");
+      const blobImage1 = await fetch(selectedImage1).then((res) => res.blob());
+      const blobImage2 = await fetch(selectedImage2).then((res) => res.blob());
+      const result = await calculateImageSimilarity(blobImage1, blobImage2);
+      console.log("API Result:", result);
+      setcolorMatchingData(result);
+      // Update state or perform any other actions with the result
+    } catch (error) {
+      // Handle errors
+    }
+  };
+
+    // const colorMatchingData = {
+    //     "color_similarity_score": 42.76,
+    //     "color_histogram_bhattacharyya_distance": 0.11,
+    //     "color_shade_differences": 3.16,
+    //     "channel_mse_scores_r": 23.89,
+    //     "channel_mse_scores_g": 24.09,
+    //     "channel_mse_scores_b": 25.11,
+    //     "color_balance_match_score": 0.0,
+    //     "saturation_difference_score": 2.7,
+    //     "average_color_deviation": 29.83,
+    //     "luminance_difference_score": 3.14,
+    //     "ciede2000_color_difference": 5.27,
+    //     "bhattacharyya_distance_color_histograms": 0.11,
+    //     "Weighted_Similarity": 0.8
     // };
-
-    // const handleDrawerClose = () => {
-    //     setIsDrawerOpen(false);
-    // };
-
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [selectedImage2, setSelectedImage2] = useState(null);
-    const fileInputRef = useRef(null);
-    const fileInputRef2 = useRef(null);
-
-    const handleImageChange = (event) => {
-        const selectedFile = event.target.files[0];
-        if (selectedFile) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                setSelectedImage(reader.result);
-            };
-            reader.readAsDataURL(selectedFile);
-        }
-    };
-    const handleImageChange2 = (event) => {
-        const selectedFile2 = event.target.files[0];
-        if (selectedFile2) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                setSelectedImage2(reader.result);
-            };
-            reader.readAsDataURL(selectedFile2);
-        }
-    };
-
-    const handleButtonClick = () => {
-        fileInputRef.current.click();
-    };
-    const handleButtonClick2 = () => {
-        fileInputRef2.current.click();
-    };
-
-    const colorMatchingData = {
-        "color_similarity_score": 42.76,
-        "color_histogram_bhattacharyya_distance": 0.11,
-        "color_shade_differences": 3.16,
-        "channel_mse_scores_r": 23.89,
-        "channel_mse_scores_g": 24.09,
-        "channel_mse_scores_b": 25.11,
-        "color_balance_match_score": 0.0,
-        "saturation_difference_score": 2.7,
-        "average_color_deviation": 29.83,
-        "luminance_difference_score": 3.14,
-        "ciede2000_color_difference": 5.27,
-        "bhattacharyya_distance_color_histograms": 0.11,
-        "Weighted_Similarity": 0.8
-    };
     const tooltipInfo = [
         "0.5 indicates a baseline similarity",
         "Closer to 0 is more similar",
@@ -102,10 +133,10 @@ const Layout = () => {
                     <Text fontSize="lg" fontWeight="semibold">
                         Upload Image To Process
                     </Text>
-                    {selectedImage ? (
+                    {selectedImage1 ? (
                         <Flex justify="center">
                             <Image
-                                src={selectedImage}
+                                src={selectedImage1}
                                 alt="Uploaded Preview"
                                 boxSize="200px"
                                 loading="lazy"
@@ -122,15 +153,15 @@ const Layout = () => {
                             onClick={handleButtonClick}
                             mt={2}
                             w="100%"
-                            leftIcon={selectedImage ? <SlReload /> : <PiImageSquareFill />}
+                            leftIcon={selectedImage1 ? <SlReload /> : <PiImageSquareFill />}
                         >
-                            {selectedImage ? "Upload Image Again" : "Upload Image"}
+                            {selectedImage1 ? "Upload Image Again" : "Upload Image"}
                         </Button>
                         <Input
                             id="fileInput"
                             type="file"
                             ref={fileInputRef}
-                            onChange={handleImageChange}
+                            onChange={handleImageChange1}
                             style={{ display: "none" }}
                         />
                     </label>
@@ -182,8 +213,8 @@ const Layout = () => {
                 </Box>
             </SimpleGrid>
             <Box>
-                {selectedImage && selectedImage2 && (
-                    <Button my={6} variant="solid" colorScheme="green" w="100%">
+                {selectedImage1 && selectedImage2 && (
+                    <Button my={6} variant="solid" colorScheme="green" w="100%" onClick={handleStartProcessing}>
                         Start Processing
                     </Button>
                 )}
@@ -376,4 +407,5 @@ const Layout = () => {
     )
 }
 
-export default Layout
+
+export default Layout;
