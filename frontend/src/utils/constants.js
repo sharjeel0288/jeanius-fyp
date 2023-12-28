@@ -8,3 +8,5 @@ export const useTextColor = () => {
     const textColor = useColorModeValue("gray.600", "gray.300");
     return textColor;
 }
+
+export const BASE_URL = 'http://localhost:8000'
