@@ -21,6 +21,7 @@ import logo from "../../Logo/jeans.png"
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import signInImage from "./bg.jpg"
 import { Link } from 'react-router-dom';
+import CryptoJS from 'crypto-js';
 
 
 const Login = () => {
@@ -30,12 +31,53 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [btnLoading, setButtonLoading] = useState(false);
+    const [btnLoading, setBtnLoading] = useState(false);
     const { colorMode } = useColorMode();
     const toast = useToast();
+    const secretKey = "sT#9yX^pQ&$mK!2wF@8zL7vA";
 
     const handleTogglePassword = () => {
         setShowPassword(!showPassword);
+    };
+
+    function handleSubmit(event) {
+        setBtnLoading(true)
+        event.preventDefault();
+
+        const credentials = {
+            email: email,
+            password: password,
+        };
+        if (email === "admin@gmail.com" && password === "admin123") {
+            // Set the department to "accounts" if the email and password match
+            // Store the department in local storage
+            const dataToEncrypt = "admin";
+            const encryptedData = CryptoJS.AES.encrypt(
+                dataToEncrypt,
+                secretKey
+            ).toString();
+            localStorage.setItem("encryptedData", encryptedData);
+
+            localStorage.setItem("isUserLoggedIn", "true");
+            setBtnLoading(false);
+            window.location.href = "/";
+        } else {
+            toast({
+                title:"Error Loggin In",
+                description:"Please enter correct credentials.",
+                status:"error",
+                position:"top-right",
+                duration:3000,
+            })
+            setBtnLoading(false);
+        }
+
+    }
+    const handleKeyPress = (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            handleSubmit(event);
+        }
     };
     return (
         <Flex position="relative" bg={bgColor}>
@@ -48,6 +90,8 @@ const Login = () => {
                 pt={{ sm: "100px", md: "0px" }}
                 flexDirection="column"
                 me={{ base: "auto", lg: "50px", xl: "auto" }}
+                as="form"
+                onKeyPress={handleKeyPress}
             >
                 <Flex
                     alignItems="center"
@@ -163,10 +207,8 @@ const Login = () => {
                                 h="45"
                                 mb="20px"
                                 mt="20px"
-                                // onClick={handleSubmit}
+                                onClick={handleSubmit}
                                 isLoading={btnLoading}
-                                as={Link}
-                                to="/dashboard"
                             >
                                 SIGN IN
                             </Button>
