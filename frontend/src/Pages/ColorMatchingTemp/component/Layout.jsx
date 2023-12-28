@@ -54,7 +54,7 @@ const Layout = () => {
     fileInputRef2.current.click();
   };
 
-  // const colorMatchingData? = {
+  // const colorMatchingData?? = {
   //     "color_similarity_score": 42.76,
   //     "color_histogram_bhattacharyya_distance": 0.11,
   //     "color_shade_differences": 3.16,
@@ -73,19 +73,20 @@ const Layout = () => {
   const [colorMatchingData, setcolorMatchingData] = useState(null);
   const handleStartProcessing = async () => {
     try {
-      console.log("---------------------");
+      setLoading(true); // Set loading to true before making the API call
       const blobImage1 = await fetch(selectedImage1).then((res) => res.blob());
       const blobImage2 = await fetch(selectedImage2).then((res) => res.blob());
       const result = await calculateImageSimilarity(blobImage1, blobImage2);
-      console.log("API Result:", result);
       setcolorMatchingData(result);
       // Update state or perform any other actions with the result
     } catch (error) {
       // Handle errors
+    } finally {
+      setLoading(false); // Set loading back to false after the API call is complete
     }
   };
 
-    // const colorMatchingData = {
+    // const colorMatchingData? = {
     //     "color_similarity_score": 42.76,
     //     "color_histogram_bhattacharyya_distance": 0.11,
     //     "color_shade_differences": 3.16,
@@ -214,7 +215,7 @@ const Layout = () => {
             </SimpleGrid>
             <Box>
                 {selectedImage1 && selectedImage2 && (
-                    <Button my={6} variant="solid" colorScheme="green" w="100%" onClick={handleStartProcessing}>
+                    <Button my={6} variant="solid" colorScheme="green" w="100%" onClick={handleStartProcessing } isLoading={loading}>
                         Start Processing
                     </Button>
                 )}
@@ -238,9 +239,9 @@ const Layout = () => {
                         px={2}
                         variant="outline"
                         borderRadius="lg"
-                        colorScheme={colorMatchingData.Weighted_Similarity >= 0.8 ? "green" : "yellow"}
+                        colorScheme={colorMatchingData?.Weighted_Similarity >= 0.8 ? "green" : "yellow"}
                     >
-                        {colorMatchingData.Weighted_Similarity}
+                        {colorMatchingData?.Weighted_Similarity}
                     </Badge>
                 </Flex>
 
@@ -261,7 +262,7 @@ const Layout = () => {
                                     </Box>
                                 </Tooltip>
                             </Flex>
-                            <Text fontWeight="semibold">{colorMatchingData.color_similarity_score}</Text>
+                            <Text fontWeight="semibold">{colorMatchingData?.color_similarity_score}</Text>
                         </Flex>
 
                         <Flex justify="space-between">
@@ -273,7 +274,7 @@ const Layout = () => {
                                     </Box>
                                 </Tooltip>
                             </Flex>
-                            <Text fontWeight="semibold">{colorMatchingData.bhattacharyya_distance_color_histograms}</Text>
+                            <Text fontWeight="semibold">{colorMatchingData?.bhattacharyya_distance_color_histograms}</Text>
                         </Flex>
 
                         <Flex justify="space-between">
@@ -285,7 +286,7 @@ const Layout = () => {
                                     </Box>
                                 </Tooltip>
                             </Flex>
-                            <Text fontWeight="semibold">{colorMatchingData.color_shade_differences}</Text>
+                            <Text fontWeight="semibold">{colorMatchingData?.color_shade_differences}</Text>
                         </Flex>
 
                         <Flex justify="space-between">
@@ -297,7 +298,7 @@ const Layout = () => {
                                     </Box>
                                 </Tooltip>
                             </Flex>
-                            <Text fontWeight="semibold">{colorMatchingData.channel_mse_scores_r}</Text>
+                            <Text fontWeight="semibold">{colorMatchingData?.channel_mse_scores_r}</Text>
                         </Flex>
 
                         <Flex justify="space-between">
@@ -309,7 +310,7 @@ const Layout = () => {
                                     </Box>
                                 </Tooltip>
                             </Flex>
-                            <Text fontWeight="semibold">{colorMatchingData.channel_mse_scores_g}</Text>
+                            <Text fontWeight="semibold">{colorMatchingData?.channel_mse_scores_g}</Text>
                         </Flex>
 
                         <Flex justify="space-between">
@@ -321,7 +322,7 @@ const Layout = () => {
                                     </Box>
                                 </Tooltip>
                             </Flex>
-                            <Text fontWeight="semibold">{colorMatchingData.channel_mse_scores_b}</Text>
+                            <Text fontWeight="semibold">{colorMatchingData?.channel_mse_scores_b}</Text>
                         </Flex>
 
                     </Flex>
@@ -339,7 +340,7 @@ const Layout = () => {
                                     </Box>
                                 </Tooltip>
                             </Flex>
-                            <Text fontWeight="semibold">{colorMatchingData.color_balance_match_score}</Text>
+                            <Text fontWeight="semibold">{colorMatchingData?.color_balance_match_score}</Text>
                         </Flex>
 
                         <Flex justify="space-between">
@@ -351,7 +352,7 @@ const Layout = () => {
                                     </Box>
                                 </Tooltip>
                             </Flex>
-                            <Text fontWeight="semibold">{colorMatchingData.saturation_difference_score}</Text>
+                            <Text fontWeight="semibold">{colorMatchingData?.saturation_difference_score}</Text>
                         </Flex>
                         <Flex justify="space-between">
                             <Flex align="center" gap={1}>
@@ -362,7 +363,7 @@ const Layout = () => {
                                     </Box>
                                 </Tooltip>
                             </Flex>
-                            <Text fontWeight="semibold">{colorMatchingData.average_color_deviation}</Text>
+                            <Text fontWeight="semibold">{colorMatchingData?.average_color_deviation}</Text>
                         </Flex>
                         <Flex justify="space-between">
                             <Flex align="center" gap={1}>
@@ -373,7 +374,7 @@ const Layout = () => {
                                     </Box>
                                 </Tooltip>
                             </Flex>
-                            <Text fontWeight="semibold">{colorMatchingData.luminance_difference_score}</Text>
+                            <Text fontWeight="semibold">{colorMatchingData?.luminance_difference_score}</Text>
                         </Flex>
                         <Flex justify="space-between">
                             <Flex align="center" gap={1}>
@@ -384,7 +385,7 @@ const Layout = () => {
                                     </Box>
                                 </Tooltip>
                             </Flex>
-                            <Text fontWeight="semibold">{colorMatchingData.ciede2000_color_difference}</Text>
+                            <Text fontWeight="semibold">{colorMatchingData?.ciede2000_color_difference}</Text>
                         </Flex>
                         <Flex justify="space-between">
                             <Flex align="center" gap={1}>
@@ -395,7 +396,7 @@ const Layout = () => {
                                     </Box>
                                 </Tooltip>
                             </Flex>
-                            <Text fontWeight="semibold">{colorMatchingData.bhattacharyya_distance_color_histograms}</Text>
+                            <Text fontWeight="semibold">{colorMatchingData?.bhattacharyya_distance_color_histograms}</Text>
                         </Flex>
                     </Flex>
                 </SimpleGrid>

@@ -1,16 +1,32 @@
 import requests
 
-url = "http://localhost:8000/api/color-match/"  # Replace with your actual API endpoint
+# Replace with the actual URL of your API endpoint
+API_ENDPOINT = "http://localhost:8000/api/measurements/"
 
-# Prepare the files
-files = {
-    'image1': ('test1.jpg', open('E:/study/FYP/fyp_dev/colorMatching/j1.jpg', 'rb'), 'image/jpg'),
-    'image2': ('test2.jpg', open('E:/study/FYP/fyp_dev/colorMatching/j2.jpg', 'rb'), 'image/jpg'),
-}
+# Replace with the path to the image file you want to test
+IMAGE_PATH = "E:/study/FYP/fyp_dev/colorMatching/j1.jpg"
 
-# Send the request
-response = requests.post(url, files=files)
+# Replace with the actual reference height value
+REFERENCE_HEIGHT = 10.0
 
-# Print the response
-print(response.status_code)
-print(response.json())
+def test_measurement_api():
+    try:
+        files = {"image": open(IMAGE_PATH, "rb")}
+        data = {"reference_height": str(REFERENCE_HEIGHT)}
+
+        response = requests.post(API_ENDPOINT, files=files, data=data)
+
+        if response.status_code == 200:
+            results = response.json()
+            print("API Response:")
+            print(results)
+        else:
+            print("Error:", response.status_code)
+            print(response.text)
+
+    except Exception as e:
+        print("Error:", str(e))
+
+
+if __name__ == "__main__":
+    test_measurement_api()
