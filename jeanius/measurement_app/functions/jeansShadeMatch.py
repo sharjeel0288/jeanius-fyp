@@ -132,8 +132,8 @@ def color_match_function(image1, image2):
 
             return similarity_percentage
         except Exception as e:
-            print(f"Error: {str(e)}")
-            return 0  # Return 0 in case of an error
+            raise Exception(f"Error: {str(e)}")
+           
 
     def extract_color_histogram(image):
         # Convert the image to the HSV color space
@@ -184,8 +184,8 @@ def color_match_function(image1, image2):
 
             return color_differences
         except Exception as e:
-            print(f"Error: {str(e)}")
-            return False
+            raise Exception(f"Error: {str(e)}")
+         
 
     # Function to calculate color correlations for ROIs
 
@@ -343,7 +343,7 @@ def color_match_function(image1, image2):
     boxes_2, classes_2 = detect_objects(img2, detection_graph)
 
     if len(boxes_2) == 0 or len(boxes_2) == 0:
-        Exception("Error Jeans not Found")
+        raise  Exception("Error Jeans not Found")
 
     process_image1 = process_image(img1)
     process_image2 = process_image(img2)
@@ -509,19 +509,19 @@ def color_match_function(image1, image2):
     )
 
     return {
-        "color_similarity_score": round(color_similarity_score, 2),
+        "color_similarity_score": round(normalized_color_similarity_score, 2),
         "color_histogram_bhattacharyya_distance": round(
-            color_histogram_bhattacharyya_distance, 2
+            normalized_color_histogram_bhattacharyya_distance, 2
         ),
-        "color_shade_differences": round(color_shade_differences, 2),
+        "color_shade_differences": round(normalized_color_shade_differences, 2),
         "channel_mse_scores_r": round(channel_mse_scores[0], 2),
         "channel_mse_scores_g": round(channel_mse_scores[1], 2),
         "channel_mse_scores_b": round(channel_mse_scores[2], 2),
-        "color_balance_match_score": round(color_balance_match_score, 2),
-        "saturation_difference_score": round(saturation_difference_score, 2),
-        "average_color_deviation": round(average_color_deviation, 2),
-        "luminance_difference_score": round(luminance_difference_score, 2),
-        "ciede2000_color_difference": round(ciede2000_color_difference, 2),
+        "color_balance_match_score": round(normalized_color_balance_match_score, 2),
+        "saturation_difference_score": round(normalized_saturation_difference_score, 2),
+        "average_color_deviation": round(normalized_average_color_deviation, 2),
+        "luminance_difference_score": round(normalized_luminance_difference_score, 2),
+        "ciede2000_color_difference": round(normalized_ciede2000_color_difference, 2),
         "bhattacharyya_distance_color_histograms": round(
             bhattacharyya_distance_color_histograms, 2
         ),

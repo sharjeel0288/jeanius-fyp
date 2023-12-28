@@ -36,8 +36,7 @@ def calculate_measurements(mask, ref_height_pixels, ref_height_cm):
     contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     if not contours:
-        print("No contours found.")
-        return
+        raise Exception("No contours found.")
 
     # Combine all individual contours into a single contour
     combined_contour = np.concatenate(contours)
@@ -221,5 +220,5 @@ def process_image(image,reference_height):
             'measurements': class_results,
         }, 
     except Exception as e:
-         return {'error': str(e)}
+         raise {'error': str(e)}
     
