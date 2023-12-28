@@ -60,29 +60,30 @@ const Layout = () => {
       setCmValue(inputValue); // Update the state with the validated input
     }
   };
+const [measurementResult,setMeasurementResult]=useState(null)
+const [isLoading, setIsLoading] = useState(true);
 
-  const handleSubmitButtonClick = async () => {
-    try {
-      console.log('Button clicked! Start Processing...');
+const handleSubmitButtonClick = async () => {
+  try {
+    console.log('Button clicked! Start Processing...');
+    setIsLoading(true); // Set loading state to true
 
-      const updatedFormData = new FormData();
-      const blobImage = await fetch(selectedImage).then((res) => res.blob());
+    const updatedFormData = new FormData();
+    const blobImage = await fetch(selectedImage).then((res) => res.blob());
+    updatedFormData.append('image', blobImage, 'image');
+    updatedFormData.append('reference_height', cmValue);
+    setFormData(updatedFormData);
 
-      // Append the image Blob to FormData
-      updatedFormData.append('image', blobImage, 'image');
+    console.log("payload-------------: ", formData);
+    const result = await getMeasurements(updatedFormData);
+    setMeasurementResult(result);
+  } catch (error) {
+    console.error("Error in submission:", error);
+  } finally {
+    setIsLoading(false); // Set loading state to false after processing
+  }
+};
 
-      // Convert cmValue to a Blob and append it to FormData
-      updatedFormData.append('reference_height', cmValue);
-
-      setFormData(updatedFormData);
-
-      console.log("payload-------------: ", formData);
-
-      await getMeasurements(updatedFormData);
-    } catch (error) {
-      console.error("Error in submission:", error);
-    }
-  };
 
   const handleButtonClick = () => {
     fileInputRef.current.click();
@@ -339,7 +340,14 @@ const Layout = () => {
           flex={4}
         >
           {/* <ImageUpload /> */}
-          <Results imgSelected={selectedImage} />
+          {isLoading ? (
+        <Box textAlign="center" mt={6}>
+          Loading...
+        </Box>
+      ) : (
+          <Results imgSelected={selectedImage} measurementsData={measurementResult} />
+          // <Text>asfasf</Text>
+      )}
         </Box>
       </Flex>
 

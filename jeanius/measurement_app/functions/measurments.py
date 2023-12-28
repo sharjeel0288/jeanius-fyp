@@ -214,7 +214,7 @@ def process_image(image,reference_height):
         _, img_buffer = cv2.imencode('.png', total_visualization_img)
         img_str = base64.b64encode(img_buffer).decode('utf-8')
         return {
-            'image': img_str,
+            # 'image': img_str,
             'message': 'Image processed successfully.',
             'measurements': class_results,
         }, 
