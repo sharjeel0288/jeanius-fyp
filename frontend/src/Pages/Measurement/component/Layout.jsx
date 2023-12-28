@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { MdUpload } from "react-icons/md";
+import { getMeasurements } from "../../../api/measurementAPI";
 import {
   Box,
   Button,
@@ -29,6 +30,7 @@ import { useBgColor } from "../../../utils/constants";
 const Layout = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [cmValue, setCmValue] = useState('');
+  const [formData, setFormData] = useState(new FormData());
 
   const handleDrawerOpen = () => {
     setIsDrawerOpen(true);
@@ -57,6 +59,25 @@ const Layout = () => {
     if (/^\d*\.?\d*$/.test(inputValue) || inputValue === '') {
       setCmValue(inputValue); // Update the state with the validated input
     }
+  };
+
+  const handleSubmitButtonClick = async () => {
+    try {
+      console.log('Button clicked! Start Processing...');
+
+      const updatedFormData = new FormData();
+      updatedFormData.append('image', selectedImage);
+      updatedFormData.append('reference_height', cmValue);
+
+      setFormData(updatedFormData);
+
+      await getMeasurements(formData)
+
+    } catch (error) {
+      console.error("Error in submission:", error);
+    }
+
+
   };
 
   const handleButtonClick = () => {
@@ -305,7 +326,7 @@ const Layout = () => {
             />
           )}
           {selectedImage && (
-            <Button my={6} variant="solid" colorScheme="green" w="100%">
+            <Button my={6} variant="solid" colorScheme="green" w="100%" onClick={handleSubmitButtonClick}>
               Start Processing
             </Button>
           )}
