@@ -69,6 +69,7 @@ const Layout = () => {
   //     "bhattacharyya_distance_color_histograms": 0.11,
   //     "Weighted_Similarity": 0.8
   // };
+  const [loading, setLoading] = useState(false);
   const [colorMatchingData, setcolorMatchingData] = useState(null);
   const handleStartProcessing = async () => {
     try {
@@ -213,7 +214,7 @@ const Layout = () => {
             </SimpleGrid>
             <Box>
                 {selectedImage1 && selectedImage2 && (
-                    <Button my={6} variant="solid" colorScheme="green" w="100%">
+                    <Button my={6} variant="solid" colorScheme="green" w="100%" onClick={handleStartProcessing}>
                         Start Processing
                     </Button>
                 )}
@@ -406,68 +407,5 @@ const Layout = () => {
     )
 }
 
-        // <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-        //   <VStack>
-        //     <Flex justify="space-between">
-        //       <Text>Color Similarity Score:</Text>
-        //       <Text>{colorMatchingData?.color_similarity_score}</Text>
-        //     </Flex>
-        //     <Flex justify="space-between">
-        //       <Text>Color Histogram Bhattacharyya Distance:</Text>
-        //       <Text>
-        //         {colorMatchingData?.bhattacharyya_distance_color_histograms}
-        //       </Text>
-        //     </Flex>
-        //     <Flex justify="space-between">
-        //       <Text>Color Shade Distance:</Text>
-        //       <Text>{colorMatchingData?.color_shade_differences}</Text>
-        //     </Flex>
-        //     <Flex justify="space-between">
-        //       <Text>Channel MSE Scores (R):</Text>
-        //       <Text>{colorMatchingData?.channel_mse_scores_r}</Text>
-        //     </Flex>
-        //     <Flex justify="space-between">
-        //       <Text>Channel MSE Scores (G):</Text>
-        //       <Text>{colorMatchingData?.channel_mse_scores_g}</Text>
-        //     </Flex>
-        //     <Flex justify="space-between">
-        //       <Text>Channel MSE Scores (B):</Text>
-        //       <Text>{colorMatchingData?.channel_mse_scores_b}</Text>
-        //     </Flex>
-        //   </VStack>
-
-        //   <VStack>
-        //     <Flex justify="space-between">
-        //       <Text>Color Balance Match Score:</Text>
-        //       <Text>{colorMatchingData?.color_balance_match_score}</Text>
-        //     </Flex>
-        //     <Flex justify="space-between">
-        //       <Text>Saturation Difference Score:</Text>
-        //       <Text>{colorMatchingData?.saturation_difference_score}</Text>
-        //     </Flex>
-        //     <Flex justify="space-between">
-        //       <Text>Average Color Deviation:</Text>
-        //       <Text>{colorMatchingData?.average_color_deviation}</Text>
-        //     </Flex>
-        //     <Flex justify="space-between">
-        //       <Text>Luminance Difference Score:</Text>
-        //       <Text>{colorMatchingData?.luminance_difference_score}</Text>
-        //     </Flex>
-        //     <Flex justify="space-between">
-        //       <Text>CIEDE 2000 Color Difference:</Text>
-        //       <Text>{colorMatchingData?.ciede2000_color_difference}</Text>
-        //     </Flex>
-        //     <Flex justify="space-between">
-        //       <Text>Bhattacharyya Distance Color Histogram:</Text>
-        //       <Text>
-        //         {colorMatchingData?.bhattacharyya_distance_color_histograms}
-        //       </Text>
-        //     </Flex>
-        //   </VStack>
-        // </SimpleGrid>
-//       </Box>
-//     </Box>
-//   );
-// };
 
 export default Layout;
