@@ -66,18 +66,22 @@ const Layout = () => {
       console.log('Button clicked! Start Processing...');
 
       const updatedFormData = new FormData();
-      updatedFormData.append('image', selectedImage);
+      const blobImage = await fetch(selectedImage).then((res) => res.blob());
+
+      // Append the image Blob to FormData
+      updatedFormData.append('image', blobImage, 'image');
+
+      // Convert cmValue to a Blob and append it to FormData
       updatedFormData.append('reference_height', cmValue);
 
       setFormData(updatedFormData);
 
-      await getMeasurements(formData)
+      console.log("payload-------------: ", formData);
 
+      await getMeasurements(updatedFormData);
     } catch (error) {
       console.error("Error in submission:", error);
     }
-
-
   };
 
   const handleButtonClick = () => {
