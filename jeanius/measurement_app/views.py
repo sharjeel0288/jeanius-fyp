@@ -28,8 +28,8 @@ def measurement_view(request):
         return JsonResponse(results, safe=False, status=200)
 
     except Exception as e:
-        error_response = {"error": str(e)}
-        return HttpResponseServerError(JsonResponse(error_response, status=500))
+        # Catch any exceptions and raise a ValueError with an appropriate message
+        raise ValueError(f"Error in calculate_measurements: {str(e)}")
 
 @require_POST
 @csrf_exempt
