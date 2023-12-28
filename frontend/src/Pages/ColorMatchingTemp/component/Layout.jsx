@@ -100,17 +100,17 @@ const Layout = () => {
             setIsLoaded(true);
         } catch (error) {
             // Handle errors
+            const errorMessage = error.response?.data?.message || 'An error occurred while processing the image.';
 
-            // Show error toast
             toast({
-                title: 'Error Processing Image',
-                description: 'An error occurred while calculating image similarity.',
-                status: 'error',
-                duration: 5000,
-                position: 'top-right',
-                isClosable: true,
+              title: 'Error Processing Image',
+              description: errorMessage,
+              status: 'error',
+              duration: 5000,
+              position: 'top-right',
+              isClosable: true,
             });
-            setIsProcessing(false);
+            setIsProcessing(false);c
         } finally {
             setLoading(false);
         }
