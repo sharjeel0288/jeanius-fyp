@@ -10,6 +10,7 @@ import {
   Heading,
   Image,
   Input,
+  Skeleton,
   Stack,
   Table,
   TableContainer,
@@ -20,6 +21,7 @@ import {
   Thead,
   Tr,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 // import Drawers from './Drawer';
 import Results from "./Results";
@@ -29,7 +31,7 @@ import { useBgColor, usePlaceholderColor } from "../../../utils/constants";
 
 const Layout = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [cmValue, setCmValue] = useState('');
+  const [cmValue, setCmValue] = useState(1);
   const [formData, setFormData] = useState(new FormData());
 
   const handleDrawerOpen = () => {
@@ -39,7 +41,6 @@ const Layout = () => {
   const handleDrawerClose = () => {
     setIsDrawerOpen(false);
   };
-
 
   const [selectedImage, setSelectedImage] = useState(null);
   const fileInputRef = useRef(null);
@@ -56,227 +57,82 @@ const Layout = () => {
   };
   const handleMeasurementChange = (event) => {
     const inputValue = event.target.value;
-    if (/^\d*\.?\d*$/.test(inputValue) || inputValue === '') {
+    if (/^\d*\.?\d*$/.test(inputValue) || inputValue === "") {
       setCmValue(inputValue); // Update the state with the validated input
     }
   };
-const [measurementResult,setMeasurementResult]=useState(null)
-const [isLoading, setIsLoading] = useState(true);
+  const [measurementResult, setMeasurementResult] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [btnLoading, setBtnLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isloaded, setIsLoaded] = useState(false);
 
-const handleSubmitButtonClick = async () => {
-  try {
-    console.log('Button clicked! Start Processing...');
-    setIsLoading(true); // Set loading state to true
+  const toast = useToast();
+  const handleSubmitButtonClick = async () => {
+    try {
+      if (cmValue <= 0 || cmValue === "" || parseFloat(cmValue) <= 0) {
+        toast({
+          title: "Invalid Distance",
+          description:
+            "Please enter a valid distance between the camera and the jeans.",
+          status: "error",
+          duration: 5000,
+          position: "top-right",
+          isClosable: true,
+        });
+        return;
+      }
+      console.log("Button clicked! Start Processing...");
+      setBtnLoading(true);
+      setIsProcessing(true);
+      setIsLoaded(false);
+      const updatedFormData = new FormData();
+      const blobImage = await fetch(selectedImage).then((res) => res.blob());
+      updatedFormData.append("image", blobImage, "image");
+      updatedFormData.append("reference_height", cmValue);
+      setFormData(updatedFormData);
 
-    const updatedFormData = new FormData();
-    const blobImage = await fetch(selectedImage).then((res) => res.blob());
-    updatedFormData.append('image', blobImage, 'image');
-    updatedFormData.append('reference_height', cmValue);
-    setFormData(updatedFormData);
+      console.log("payload-------------: ", formData);
+      const result = await getMeasurements(updatedFormData);
+      setMeasurementResult(result);
+      toast({
+        title: "Processing Successful",
+        description: "Image measurment calculated successfully.",
+        status: "success",
+        duration: 5000,
+        position: "top-right",
+        isClosable: true,
+      });
+      setIsLoaded(true);
+    } catch (error) {
+      console.error("Error in submission:", error);
+      // Check if the error response contains a message from the server
+      const errorMessage =
+        error.response?.data?.message ||
+        "An error occurred while processing the image.";
 
-    console.log("payload-------------: ", formData);
-    const result = await getMeasurements(updatedFormData);
-    setMeasurementResult(result);
-  } catch (error) {
-    console.error("Error in submission:", error);
-  } finally {
-    setIsLoading(false); // Set loading state to false after processing
-  }
-};
-
+      toast({
+        title: "Error Processing Image",
+        description: errorMessage,
+        status: "error",
+        duration: 5000,
+        position: "top-right",
+        isClosable: true,
+      });
+      setIsProcessing(false);
+    } finally {
+      setIsLoading(false); // Set loading state to false after processing
+      setBtnLoading(false);
+    }
+  };
 
   const handleButtonClick = () => {
     fileInputRef.current.click();
   };
-  // const measurementsData = [
-  //     {
-  //         "measurements": {
-  //             "class_name": "jeans",
-  //             "pixel_to_cm_factor": 0.1,
-  //             "top_to_bottom_height": 50.300000000000004,
-  //             "left_width": 112.7,
-  //             "right_width": 112.7,
-  //             "max_distances": {
-  //                 "top_distance": 61.773780845922005,
-  //                 "bottom_distance": 61.73305435502118,
-  //                 "center_distance": 61.68249346451552
-  //             },
-  //             "length_distances": {
-  //                 "left_length": 61.64170666034482,
-  //                 "right_length": 61.773780845922005
-  //             },
-  //             "left_diagonal_distance": 123.41547714934298,
-  //             "right_diagonal_distance": 123.41547714934298,
-  //             "area": 458443.0,
-  //             "perimeter": 6535.561874389648
-  //         }
-  //     },
-  //     {
-  //         "measurements": {
-  //             "class_name": "belt badge",
-  //             "pixel_to_cm_factor": 0.1,
-  //             "top_to_bottom_height": 7.2,
-  //             "left_width": 4.3,
-  //             "right_width": 4.3,
-  //             "max_distances": {
-  //                 "top_distance": 4.219004621945798,
-  //                 "bottom_distance": 4.219004621945798,
-  //                 "center_distance": 4.167733196834941
-  //             },
-  //             "length_distances": {
-  //                 "left_length": 4.167733196834941,
-  //                 "right_length": 4.219004621945798
-  //             },
-  //             "left_diagonal_distance": 8.386298349093002,
-  //             "right_diagonal_distance": 8.386298349093002,
-  //             "area": 3078.0,
-  //             "perimeter": 227.65685415267944
-  //         }
-  //     },
-  //     {
-  //         "measurements": {
-  //             "class_name": "yoke",
-  //             "pixel_to_cm_factor": 0.1,
-  //             "top_to_bottom_height": 42.6,
-  //             "left_width": 4.3,
-  //             "right_width": 4.3,
-  //             "max_distances": {
-  //                 "top_distance": 21.41331361559906,
-  //                 "bottom_distance": 21.41331361559906,
-  //                 "center_distance": 21.403270778084362
-  //             },
-  //             "length_distances": {
-  //                 "left_length": 21.403270778084362,
-  //                 "right_length": 21.41331361559906
-  //             },
-  //             "left_diagonal_distance": 42.816468794145095,
-  //             "right_diagonal_distance": 42.816468794145095,
-  //             "area": 4596.0,
-  //             "perimeter": 972.1665205955505
-  //         }
-  //     },
-  //     {
-  //         "measurements": {
-  //             "class_name": "backbelt loop 1",
-  //             "pixel_to_cm_factor": 0.1,
-  //             "top_to_bottom_height": 1.5,
-  //             "left_width": 5.300000000000001,
-  //             "right_width": 5.300000000000001,
-  //             "max_distances": {
-  //                 "top_distance": 2.816025568065745,
-  //                 "bottom_distance": 2.7892651361962706,
-  //                 "center_distance": 2.720294101747089
-  //             },
-  //             "length_distances": {
-  //                 "left_length": 2.6925824035672523,
-  //                 "right_length": 2.816025568065745
-  //             },
-  //             "left_diagonal_distance": 5.508175741568165,
-  //             "right_diagonal_distance": 5.508175741568165,
-  //             "area": 777.0,
-  //             "perimeter": 133.65685415267944
-  //         }
-  //     },
-  //     {
-  //         "measurements": {
-  //             "class_name": "backbeltwidth",
-  //             "pixel_to_cm_factor": 0.1,
-  //             "top_to_bottom_height": 38.1,
-  //             "left_width": 3.9000000000000004,
-  //             "right_width": 3.9000000000000004,
-  //             "max_distances": {
-  //                 "top_distance": 19.20442657305862,
-  //                 "bottom_distance": 19.19426997830342,
-  //                 "center_distance": 19.104973174542803
-  //             },
-  //             "length_distances": {
-  //                 "left_length": 19.09476368012969,
-  //                 "right_length": 19.20442657305862
-  //             },
-  //             "left_diagonal_distance": 38.29908615097755,
-  //             "right_diagonal_distance": 38.29908615097755,
-  //             "area": 9184.5,
-  //             "perimeter": 1099.213203072548
-  //         }
-  //     },
-  //     {
-  //         "measurements": {
-  //             "class_name": "back left pocket",
-  //             "pixel_to_cm_factor": 0.1,
-  //             "top_to_bottom_height": 16.6,
-  //             "left_width": 16.6,
-  //             "right_width": 16.6,
-  //             "max_distances": {
-  //                 "top_distance": 11.737972567696689,
-  //                 "bottom_distance": 11.737972567696689,
-  //                 "center_distance": 11.737972567696689
-  //             },
-  //             "length_distances": {
-  //                 "left_length": 11.737972567696689,
-  //                 "right_length": 11.737972567696689
-  //             },
-  //             "left_diagonal_distance": 23.475945135393378,
-  //             "right_diagonal_distance": 23.475945135393378,
-  //             "area": 23453.5,
-  //             "perimeter": 639.9827550649643
-  //         }
-  //     },
-  //     {
-  //         "measurements": {
-  //             "class_name": "backbelt loop 3",
-  //             "pixel_to_cm_factor": 0.1,
-  //             "top_to_bottom_height": 1.6,
-  //             "left_width": 5.300000000000001,
-  //             "right_width": 5.300000000000001,
-  //             "max_distances": {
-  //                 "top_distance": 2.816025568065745,
-  //                 "bottom_distance": 2.816025568065745,
-  //                 "center_distance": 2.720294101747089
-  //             },
-  //             "length_distances": {
-  //                 "left_length": 2.720294101747089,
-  //                 "right_length": 2.816025568065745
-  //             },
-  //             "left_diagonal_distance": 5.5362442142665635,
-  //             "right_diagonal_distance": 5.5362442142665635,
-  //             "area": 820.0,
-  //             "perimeter": 135.65685415267944
-  //         }
-  //     },
-  //     {
-  //         "measurements": {
-  //             "class_name": "back left pocket",
-  //             "pixel_to_cm_factor": 0.1,
-  //             "top_to_bottom_height": 16.6,
-  //             "left_width": 16.6,
-  //             "right_width": 16.6,
-  //             "max_distances": {
-  //                 "top_distance": 11.737972567696689,
-  //                 "bottom_distance": 11.737972567696689,
-  //                 "center_distance": 11.737972567696689
-  //             },
-  //             "length_distances": {
-  //                 "left_length": 11.737972567696689,
-  //                 "right_length": 11.737972567696689
-  //             },
-  //             "left_diagonal_distance": 23.475945135393378,
-  //             "right_diagonal_distance": 23.475945135393378,
-  //             "area": 22722.5,
-  //             "perimeter": 639.9827550649643
-  //         }
-  //     }
-  // ];
-
   return (
     <Box>
-      <Flex justify="space-between">
-
-      </Flex>
-      <Flex
-        gap={4}
-        direction={{ base: "column", lg: "row" }}
-        w="100%"
-      >
+      <Flex justify="space-between"></Flex>
+      <Flex gap={4} direction={{ base: "column", lg: "row" }} w="100%">
         <Box
           bg={useBgColor}
           borderRadius="lg"
@@ -333,23 +189,29 @@ const handleSubmitButtonClick = async () => {
             />
           )}
           {selectedImage && (
-            <Button my={6} variant="solid" colorScheme="green" w="100%" onClick={handleSubmitButtonClick}>
+            <Button
+              my={6}
+              variant="solid"
+              colorScheme="green"
+              w="100%"
+              onClick={handleSubmitButtonClick}
+              isLoading={btnLoading}
+            >
               Start Processing
             </Button>
           )}
         </Box>
-        <Box
-          flex={4}
-        >
+        <Box flex={4}>
           {/* <ImageUpload /> */}
-          {isLoading ? (
-        <Box textAlign="center" mt={6}>
-          Loading...
-        </Box>
-      ) : (
-          <Results imgSelected={selectedImage} measurementsData={measurementResult} />
-          // <Text>asfasf</Text>
-      )}
+          
+          {isProcessing && (
+            <Skeleton isLoaded={isloaded}>
+              <Results
+                imgSelected={selectedImage}
+                measurementsData={measurementResult}
+              />
+            </Skeleton>
+          )}
         </Box>
       </Flex>
 
