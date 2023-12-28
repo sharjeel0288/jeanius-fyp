@@ -166,6 +166,7 @@ const Layout = () => {
               mt={2}
               w="100%"
               leftIcon={selectedImage ? <SlReload /> : <PiImageSquareFill />}
+              isDisabled={btnLoading}
             >
               {selectedImage ? "Upload Image Again" : "Upload Image"}
             </Button>
@@ -186,6 +187,7 @@ const Layout = () => {
               mt={4}
               borderColor="purple.500"
               _placeholder={{ color: usePlaceholderColor }}
+              isDisabled={btnLoading}
             />
           )}
           {selectedImage && (
