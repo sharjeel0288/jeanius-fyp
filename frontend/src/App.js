@@ -3,7 +3,7 @@ import SideBar from './Navigation/SideBar';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import DashBoard from './Pages/DashBoard/DashBoard';
 import ColorMatching from './Pages/ColorMatching/ColorMatching';
-import Measurements from './Pages/Measurement/Measurements';
+// import Measurements from './Pages/Measurement/Measurements';
 import { useEffect, useState } from 'react';
 import Users from './Pages/users/Users';
 import Login from './Pages/Login/Login';
@@ -12,6 +12,9 @@ import ColorMatchingTemp from './Pages/ColorMatchingTemp/ColorMatchingTemp';
 import CryptoJS from 'crypto-js';
 import Clients from './Pages/Clients/Clients';
 import { theme } from './utils/theme';
+import NewBatch from './Pages/ColorMatching/component/NewBatch';
+import MyDashboard from './Pages/Employee/MyDashboard/MyDashboard';
+import Measurements from './Pages/Admin/Measurement/Measurements';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(null); // Use null as initial state
@@ -34,8 +37,8 @@ function App() {
   const allowedPaths = [
     "/dashboard",
     "/color-matching-future",
-    "color-matching",
-    "measurements",
+    "/color-matching",
+    "/measurements",
     "/users",
     "/*",
     // Add more allowed paths as needed
@@ -131,8 +134,10 @@ function App() {
                 <Route path='/dashboard' element={<DashBoard sideBarWidth={sideBarWidth} />} />
                 {/* <Route path='/color-matching-future' element={<ColorMatching sideBarWidth={sideBarWidth} />} /> */}
                 <Route path='/color-matching' element={<ColorMatching sideBarWidth={sideBarWidth} />} />
-                {/* <Route path='/color-matching' element={<ColorMatchingTemp sideBarWidth={sideBarWidth} />} /> */}
+                <Route path='/color-matching/new' element={<NewBatch sideBarWidth={sideBarWidth} />} />
+                <Route path='/color-matching-future' element={<ColorMatchingTemp sideBarWidth={sideBarWidth} />} />
                 <Route path='/measurements' element={<Measurements sideBarWidth={sideBarWidth} />} />
+                {/* <Route path='/measurements-temp' element={<Measurements sideBarWidth={sideBarWidth} />} /> */}
                 <Route path='/users' element={<Users sideBarWidth={sideBarWidth} />} />
                 <Route path='/clients' element={<Clients sideBarWidth={sideBarWidth} />} />
                 <Route path='/*' element={<DashBoard />} />
@@ -140,14 +145,10 @@ function App() {
             )}
             {department === "employee" && (
               <>
-                <Route path='/' element={<Navigate to="/dashboard" />} />
-                {/* <Route path='/sign-in' element={<Login />} /> */}
-                <Route path='/dashboard' element={<DashBoard sideBarWidth={sideBarWidth} />} />
+                <Route path='/' element={<Navigate to="/mydashboard" />} />
+                <Route path='/mydashboard' element={<MyDashboard sideBarWidth={sideBarWidth} />} />
                 <Route path='/color-matching-future' element={<ColorMatching sideBarWidth={sideBarWidth} />} />
-                {/* <Route path='/color-matching' element={<ColorMatchingTemp sideBarWidth={sideBarWidth} />} /> */}
-                {/* <Route path='/measurements' element={<Measurements sideBarWidth={sideBarWidth} />} /> */}
-                {/* <Route path='/users' element={<Users sideBarWidth={sideBarWidth} />} /> */}
-                <Route path='/*' element={<DashBoard />} />
+                {/* <Route path='/*' element={<DashBoard />} /> */}
               </>
             )}
           </Routes>

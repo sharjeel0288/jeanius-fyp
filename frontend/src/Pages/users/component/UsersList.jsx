@@ -40,6 +40,7 @@ import { Link } from "react-router-dom";
 import { BsFiletypePdf } from "react-icons/bs";
 import DeleteAlert from "../../../components/DeleteAlert";
 import { employees } from "../../../utils/dummyData";
+import { useBgColor } from "../../../utils/constants";
 
 
 const UsersList = ({ branchNameSearch }) => {
@@ -50,7 +51,6 @@ const UsersList = ({ branchNameSearch }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [selectedDrawerType, setSelectedDrawerType] = useState("");
     const [selectedItemData, setSelectedItemData] = useState(null);
-    const bgColor = useColorModeValue("white", "gray.700");
     const itemsPerPage = 10;
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -140,7 +140,7 @@ const UsersList = ({ branchNameSearch }) => {
     return (
 
         <Box
-            bg={bgColor}
+            bg={useBgColor}
             borderWidth="1px"
             borderColor={borderColor}
             borderRadius="md"

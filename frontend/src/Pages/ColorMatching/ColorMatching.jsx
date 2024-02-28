@@ -1,25 +1,33 @@
-import { Box, Button, Container, Flex, Grid, Heading, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Grid, Heading, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import Layout from './component/Layout';
+import ActiveBatch from '../DashBoard/components/ActiveBatch';
+import { colorMatchingActive, measurementsActive } from '../../utils/dummyData';
+import { Link } from 'react-router-dom';
+import Page from '../../components/Layout/Page';
+import NewBatch from './component/NewBatch';
 
 const ColorMatching = ({ sideBarWidth }) => {
+    const { isOpen, onOpen, onClose } = useDisclosure()
 
     return (
         // <Box minH="90vh" mt={10} maxW="90vw">
-        <Box py={8} w="auto" minH="100vh">
-
-            <Container maxW="container.xxl" justifySelf="center">
-                <Box
-                    ml={{ base: 0, lg: sideBarWidth === "small" ? 14 : 60 }}
-                    transition="margin 0.3s ease-in-out"
+        <Page sideBarWidth={sideBarWidth}>
+            <Flex justify="space-between">
+                <Heading>Color Matching</Heading>
+                <Button
+                    onClick={onOpen}
+                    variant="solid"
+                    colorScheme='purple'
                 >
-                    <Heading>Color Matching - FUTURE</Heading>
+                    New Batch
+                </Button>
+            </Flex>
 
-                    <Layout />
-                </Box>
-            </Container >
-        </Box >
-    );
+            <Layout />
+            {isOpen && <NewBatch isOpen={isOpen} onClose={onClose} />}
+        </Page>
+    )
 };
 
 export default ColorMatching;

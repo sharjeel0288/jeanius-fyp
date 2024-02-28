@@ -43,16 +43,65 @@ import { FaBuildingUser, FaUserPlus } from "react-icons/fa6";
 
 import logo from "../Logo/jeans.png";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
+import CryptoJS from 'crypto-js';
 
-const LinkItems = [
+
+let LinkItems = [
   { name: "DashBoard", icon: IoHomeOutline, to: "/" },
   { name: "Color Matching", icon: TbColorSwatch, to: "/color-matching" },
   { name: "Measurements", icon: TbRulerMeasure, to: "/measurements" },
   { name: "Clients", icon: FaBuildingUser, to: "/clients" },
   { name: "Employees", icon: FaUserPlus, to: "/users" },
+  // { name: "Branches", icon: FaUserPlus, to: "/users" },
   // { name: 'Favourites', icon: FiStar },
   // { name: 'Settings', icon: FiSettings },
 ];
+const encryptedData = localStorage.getItem("encryptedData");
+const Name = localStorage.getItem("Name");
+const secretKey = "sT#9yX^pQ&$mK!2wF@8zL7vA"; // Replace with your own secret key
+let department = ""; // Initialize the department variable
+
+if (encryptedData) {
+  try {
+    // Decrypt the data
+    const decryptedData = CryptoJS.AES.decrypt(
+      encryptedData,
+      secretKey
+    ).toString(CryptoJS.enc.Utf8);
+
+    if (decryptedData) {
+      // Data successfully decrypted, assign it to the department variable
+      department = decryptedData;
+    } else {
+      // Handle the case where decryption resulted in empty data
+      console.error("Decryption resulted in empty data");
+    }
+  } catch (error) {
+    // Handle decryption errors
+    console.error("Decryption error:", error);
+  }
+} else {
+  // Handle the case where 'encryptedData' is not found in local storage
+  console.error("Item not found in local storage");
+}
+if (department) {
+  if (department === "admin") {
+    // Filter out items for the "admin" department
+    // const itemsToExclude = ["CashBook", "Reports", "Dashboard", "Purchasing"];
+    // LinkItems = LinkItems.filter(item => !itemsToExclude.includes(item.name));
+  }
+  else if (department === "employee") {
+    const itemsToExclude = [
+      "DashBoard",
+      "Clients",
+      "Color Matching",
+      "Measurements",
+      "Employees",
+    ]
+    LinkItems = LinkItems.filter(item => !itemsToExclude.includes(item.name));
+  }
+}
+
 function handleLogout() {
   sessionStorage.clear();
   localStorage.clear();

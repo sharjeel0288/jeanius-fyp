@@ -1,11 +1,15 @@
 import React, { useRef, useState } from 'react'
 import { MdUpload } from 'react-icons/md';
-import { Box, Button, Container, Flex, Grid, Heading, Image, Input, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Grid, Heading, Image, Input, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useColorModeValue, useDisclosure } from '@chakra-ui/react';
 import Details from './Details';
 import Drawers from './Drawer';
 import { SlReload } from 'react-icons/sl';
 import { PiImageSquareFill } from 'react-icons/pi';
 import { useBgColor } from '../../../utils/constants';
+import NewBatch from './NewBatch';
+import BatchCard from './BatchCard';
+import { batchDetails, colorMatchingActive } from '../../../utils/dummyData';
+import ActiveBatch from '../../DashBoard/components/ActiveBatch';
 
 const Layout = () => {
     const results = [
@@ -89,14 +93,16 @@ const Layout = () => {
     };
     return (
         <Box>
-            <Flex justify="end">
-                <Button
-                    onClick={handleDrawerOpen}
-                    colorScheme='purple'
-                    leftIcon={<MdUpload />}
-                >
-                    Upload Reference Images
-                </Button>
+            <ActiveBatch {...colorMatchingActive} />
+            <Flex
+                my={4}
+                gap={2}
+                wrap="wrap"
+            >
+
+                {batchDetails.map((item, index) => (
+                    <BatchCard {...item} />
+                ))}
             </Flex>
 
             <Flex
@@ -104,7 +110,7 @@ const Layout = () => {
                 direction={{ base: "column", lg: "row" }}
                 w="100%"
             >
-                <Box
+                {/* <Box
                     bg={useBgColor}
                     borderRadius="lg"
                     p={4}
@@ -152,19 +158,17 @@ const Layout = () => {
                             Start Processing
                         </Button>
                     )}
-                </Box>
+                </Box> */}
                 <Box
                     flex={4}
                 >
-                    {/* <ImageUpload /> */}
-                    <Details />
+                    <Details />    
 
                 </Box>
             </Flex>
 
 
 
-            <Drawers isOpen={isDrawerOpen} onClose={handleDrawerClose} />
         </Box>
     )
 }

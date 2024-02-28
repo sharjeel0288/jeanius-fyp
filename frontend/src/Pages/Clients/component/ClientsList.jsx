@@ -40,6 +40,7 @@ import { Link } from "react-router-dom";
 import { BsFiletypePdf } from "react-icons/bs";
 import DeleteAlert from "../../../components/DeleteAlert";
 import { clients } from "../../../utils/dummyData";
+import { useBgColor } from "../../../utils/constants";
 
 
 const ClientsList = ({ branchNameSearch }) => {
@@ -139,7 +140,7 @@ const ClientsList = ({ branchNameSearch }) => {
     return (
 
         <Box
-            bg={bgColor}
+            bg={useBgColor}
             borderWidth="1px"
             borderColor={borderColor}
             borderRadius="md"

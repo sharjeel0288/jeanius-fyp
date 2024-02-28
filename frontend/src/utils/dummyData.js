@@ -137,7 +137,7 @@ export const employees = [
 export const colorMatchingActive = {
     title: "Color Matching",
     batchNo: 5,
-    progressVal: 45,
+    progressValue: 45,
     tableItems: [
         {
             name: "Batch 4",
@@ -159,7 +159,7 @@ export const colorMatchingActive = {
 export const measurementsActive = {
     title: "Measurements",
     batchNo: 15,
-    progressVal: 55,
+    progressValue: 55,
     tableItems: [
         {
             name: "Batch 14",
@@ -178,3 +178,53 @@ export const measurementsActive = {
         },
     ]
 }
+
+export const employeeNames = [
+    { name: "Ahmed" },
+    { name: "amjad" },
+    { name: "Malik" },
+    { name: "Shan" },
+    { name: "Junaid" },
+    { name: "Akmal" },
+]
+export const clientNames = [
+    { name: "John" },
+    { name: "Alice" },
+    { name: "Michael" },
+    { name: "Sophie" },
+    { name: "David" },
+    { name: "Emily" },
+];
+
+export const batchDetails = [
+    {
+        batchNo: 5,
+        client: "Ahmed",
+        employee: "Umer",
+        progressValue: 40,
+    },
+    {
+        batchNo: 6,
+        client: "Alice",
+        employee: "Sarah",
+        progressValue: 55,
+    },
+    {
+        batchNo: 7,
+        client: "Michael",
+        employee: "John",
+        progressValue: 30,
+    },
+    {
+        batchNo: 8,
+        client: "Sophie",
+        employee: "Emily",
+        progressValue: 70,
+    },
+    {
+        batchNo: 9,
+        client: "David",
+        employee: "Alex",
+        progressValue: 85,
+    },
+];

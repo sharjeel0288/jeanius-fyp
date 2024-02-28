@@ -7,7 +7,7 @@ import { Tooltip } from 'recharts';
 const ActiveBatch = ({
     title,
     batchNo,
-    progressVal,
+    progressValue,
     tableItems = []
 }) => {
     const backgroundColor = useColorModeValue(theme.colors.background.main, theme.colors.background.child);
@@ -53,8 +53,8 @@ const ActiveBatch = ({
                         />
                     </Box>
                     <Center>
-                        <CircularProgress value={progressVal} color='green.400'>
-                            <CircularProgressLabel>{progressVal}%</CircularProgressLabel>
+                        <CircularProgress value={progressValue} color='green.400'>
+                            <CircularProgressLabel>{progressValue}%</CircularProgressLabel>
                         </CircularProgress>
                     </Center>
                 </SimpleGrid>
