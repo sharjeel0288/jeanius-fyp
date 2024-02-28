@@ -11,6 +11,7 @@ import ColorMatchingTemp from './Pages/ColorMatchingTemp/ColorMatchingTemp';
 // ... other imports
 import CryptoJS from 'crypto-js';
 import Clients from './Pages/Clients/Clients';
+import { theme } from './utils/theme';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(null); // Use null as initial state
@@ -118,7 +119,7 @@ function App() {
     );
   }
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       {isLoggedIn && (
         <>
           {<SideBar sideBarWidth={sideBarWidth} handleSidebarWidth={handleSidebarWidth} />}

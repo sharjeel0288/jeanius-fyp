@@ -39,6 +39,7 @@ import {
 import { Link } from "react-router-dom";
 import { BsFiletypePdf } from "react-icons/bs";
 import DeleteAlert from "../../../components/DeleteAlert";
+import { clients } from "../../../utils/dummyData";
 
 
 const ClientsList = ({ branchNameSearch }) => {
@@ -66,59 +67,11 @@ const ClientsList = ({ branchNameSearch }) => {
 
     const toast = useToast(); // Initialize useToast
     //   const [users, setusers] = useState([]);
-
-    const users = [
-        {
-            fname: "Aslam",
-            lname: "Butt",
-            userName: "aslam.butt",
-            password: "aslam@123",
-            phoneNo: "+920139123912",
-            email: "email@email.com",
-        },
-        {
-            fname: "Farida",
-            lname: "Khan",
-            userName: "farida.khan",
-            password: "farida@456",
-            phoneNo: "+920139123912",
-            email: "email@email.com",
-        },
-        {
-            fname: "Nadeem",
-            lname: "Malik",
-            userName: "nadeem.malik",
-            password: "nadeem@789",
-            phoneNo: "+920139123912",
-            email: "email@email.com",
-        },
-        {
-            fname: "Saima",
-            lname: "Akhtar",
-            userName: "saima.akhtar",
-            password: "saima@987",
-            phoneNo: "+920139123912",
-            email: "email@email.com",
-        },
-        {
-            fname: "Usman",
-            lname: "Ahmed",
-            userName: "usman.ahmed",
-            password: "usman@654",
-            phoneNo: "+920139123912",
-            email: "email@email.com",
-        },
-    ];
-
-
-
-
-    // Filter items based on search and selected category
-    const filteredItems = users.filter(
+    const filteredItems = clients.filter(
         (item) =>
             (item.fname + " " + item.lname)?.toLowerCase().includes(searchTerm) ||
-            item.userName?.toLowerCase().includes(searchTerm) ||
-            item.department?.toLowerCase().includes(searchTerm)
+            item.phoneNo?.toLowerCase().includes(searchTerm) ||
+            item.email?.toLowerCase().includes(searchTerm)
         // (selectedBranch === "" || item.branchName === selectedBranch)
     );
 

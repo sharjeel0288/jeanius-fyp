@@ -39,6 +39,7 @@ import {
 import { Link } from "react-router-dom";
 import { BsFiletypePdf } from "react-icons/bs";
 import DeleteAlert from "../../../components/DeleteAlert";
+import { employees } from "../../../utils/dummyData";
 
 
 const UsersList = ({ branchNameSearch }) => {
@@ -67,104 +68,7 @@ const UsersList = ({ branchNameSearch }) => {
     const toast = useToast(); // Initialize useToast
     //   const [users, setusers] = useState([]);
 
-    const users = [
-        {
-            fname: "Aslam",
-            lname: "Butt",
-            role: "employee",
-            department: "Color Matching",
-            date: "20-02-2010",
-            userName: "aslam.butt",
-            password: "aslam@123",
-        },
-        {
-            fname: "Farida",
-            lname: "Khan",
-            role: "head",
-            department: "Measurements",
-            date: "15-06-2015",
-            userName: "farida.khan",
-            password: "farida@456",
-        },
-        {
-            fname: "Nadeem",
-            lname: "Malik",
-            role: "employee",
-            department: "Color Matching",
-            date: "03-11-2018",
-            userName: "nadeem.malik",
-            password: "nadeem@789",
-        },
-        {
-            fname: "Saima",
-            lname: "Akhtar",
-            role: "employee",
-            department: "Measurements",
-            date: "12-09-2012",
-            userName: "saima.akhtar",
-            password: "saima@987",
-        },
-        {
-            fname: "Usman",
-            lname: "Ahmed",
-            role: "head",
-            department: "Color Matching",
-            date: "08-04-2017",
-            userName: "usman.ahmed",
-            password: "usman@654",
-        },
-        {
-            fname: "Ayesha",
-            lname: "Riaz",
-            role: "employee",
-            department: "Measurements",
-            date: "23-01-2019",
-            userName: "ayesha.riaz",
-            password: "ayesha@321",
-        },
-        {
-            fname: "Imran",
-            lname: "Zafar",
-            role: "head",
-            department: "Color Matching",
-            date: "10-07-2014",
-            userName: "imran.zafar",
-            password: "imran@135",
-        },
-        {
-            fname: "Nazia",
-            lname: "Iqbal",
-            role: "employee",
-            department: "Color Matching",
-            date: "05-12-2016",
-            userName: "nazia.iqbal",
-            password: "nazia@246",
-        },
-        {
-            fname: "Kamran",
-            lname: "Akram",
-            role: "employee",
-            department: "Measurements",
-            date: "18-03-2021",
-            userName: "kamran.akram",
-            password: "kamran@789",
-        },
-        {
-            fname: "Saba",
-            lname: "Hussain",
-            role: "head",
-            department: "Measurements",
-            date: "30-08-2013",
-            userName: "saba.hussain",
-            password: "saba@567",
-        },
-    ];
-    
-    
-
-
-    // Filter items based on search and selected category
-    const filteredItems = users.filter(
+    const filteredItems = employees.filter(
         (item) =>
             (item.fname + " " + item.lname)?.toLowerCase().includes(searchTerm) ||
             item.userName?.toLowerCase().includes(searchTerm) ||

@@ -1,19 +1,24 @@
-import { Box, Container } from '@chakra-ui/react'
+import { Box, Container, SimpleGrid } from '@chakra-ui/react'
 import React from 'react'
+import Page from '../../components/Layout/Page'
+import ActiveBatch from './components/ActiveBatch'
+import { colorMatchingActive, measurementsActive } from '../../utils/dummyData'
 
 const DashBoard = ({ sideBarWidth }) => {
   return (
-    <Box py={8} w="auto" minH="100vh">
-
-      <Container maxW="container.xxl" justifySelf="center">
-        <Box
-          ml={{ base: 0, lg: sideBarWidth === "small" ? 14 : 60 }}
-          transition="margin 0.3s ease"
-        >
-          Dashboard
-        </Box>
-      </Container >
-    </Box >
+    <Page sideBarWidth={sideBarWidth}>
+      <SimpleGrid
+        columns={{ base: 1, md: 2 }}
+        gap={4}
+      >
+        <ActiveBatch
+          {...colorMatchingActive}
+        />
+        <ActiveBatch
+          {...measurementsActive}
+        />
+      </SimpleGrid>
+    </Page>
   )
 }
 

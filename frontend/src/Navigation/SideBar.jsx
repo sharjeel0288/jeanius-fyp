@@ -49,7 +49,7 @@ const LinkItems = [
   { name: "Color Matching", icon: TbColorSwatch, to: "/color-matching" },
   { name: "Measurements", icon: TbRulerMeasure, to: "/measurements" },
   { name: "Clients", icon: FaBuildingUser, to: "/clients" },
-  { name: "Users", icon: FaUserPlus, to: "/users" },
+  { name: "Employees", icon: FaUserPlus, to: "/users" },
   // { name: 'Favourites', icon: FiStar },
   // { name: 'Settings', icon: FiSettings },
 ];
