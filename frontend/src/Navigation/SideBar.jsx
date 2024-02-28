@@ -46,16 +46,8 @@ import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import CryptoJS from 'crypto-js';
 
 
-let LinkItems = [
-  { name: "DashBoard", icon: IoHomeOutline, to: "/" },
-  { name: "Color Matching", icon: TbColorSwatch, to: "/color-matching" },
-  { name: "Measurements", icon: TbRulerMeasure, to: "/measurements" },
-  { name: "Clients", icon: FaBuildingUser, to: "/clients" },
-  { name: "Employees", icon: FaUserPlus, to: "/users" },
-  // { name: "Branches", icon: FaUserPlus, to: "/users" },
-  // { name: 'Favourites', icon: FiStar },
-  // { name: 'Settings', icon: FiSettings },
-];
+let LinkItems = [];
+let userName = "";
 const encryptedData = localStorage.getItem("encryptedData");
 const Name = localStorage.getItem("Name");
 const secretKey = "sT#9yX^pQ&$mK!2wF@8zL7vA"; // Replace with your own secret key
@@ -89,16 +81,23 @@ if (department) {
     // Filter out items for the "admin" department
     // const itemsToExclude = ["CashBook", "Reports", "Dashboard", "Purchasing"];
     // LinkItems = LinkItems.filter(item => !itemsToExclude.includes(item.name));
+    userName="Admin";
+    LinkItems = [
+      { name: "DashBoard", icon: IoHomeOutline, to: "/" },
+      { name: "Color Matching", icon: TbColorSwatch, to: "/color-matching" },
+      { name: "Measurements", icon: TbRulerMeasure, to: "/measurements" },
+      { name: "Clients", icon: FaBuildingUser, to: "/clients" },
+      { name: "Employees", icon: FaUserPlus, to: "/users" },
+
+    ];
   }
   else if (department === "employee") {
-    const itemsToExclude = [
-      "DashBoard",
-      "Clients",
-      "Color Matching",
-      "Measurements",
-      "Employees",
-    ]
-    LinkItems = LinkItems.filter(item => !itemsToExclude.includes(item.name));
+    userName="Employee";
+    LinkItems = [
+      { name: "DashBoard", icon: IoHomeOutline, to: "/mydashboard" },
+      { name: "Color Matching", icon: TbColorSwatch, to: "/color-matching" },
+
+    ];
   }
 }
 
@@ -296,16 +295,16 @@ const MobileNav = ({
               _focus={{ boxShadow: "none" }}
             >
               <HStack>
-                <Avatar size={"sm"} name="admin" src={""} />
+                <Avatar size={"sm"} name={userName} src={""} />
                 <VStack
                   display={{ base: "none", md: "flex" }}
                   alignItems="flex-start"
                   spacing="1px"
                   ml="2"
                 >
-                  <Text fontSize="sm">Admin</Text>
+                  <Text fontSize="sm">{userName}</Text>
                   <Text fontSize="xs" color="gray.600">
-                    Admin
+                    {userName}
                   </Text>
                 </VStack>
                 <Box display={{ base: "none", md: "flex" }}>

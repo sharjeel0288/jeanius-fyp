@@ -228,3 +228,139 @@ export const batchDetails = [
         progressValue: 85,
     },
 ];
+
+
+export const batchItemsActive = [
+    {
+        batchNo: 3,
+        totalJeans: 1200,
+        allocatedJeans: 600,
+        deadline: "24/05/2024",
+        progressValue: 20,
+    },
+    {
+        batchNo: 4,
+        totalJeans: 1500,
+        allocatedJeans: 800,
+        deadline: "30/06/2024",
+        progressValue: 40,
+    },
+    {
+        batchNo: 5,
+        totalJeans: 1000,
+        allocatedJeans: 500,
+        deadline: "15/07/2024",
+        progressValue: 60,
+    },
+    {
+        batchNo: 6,
+        totalJeans: 2000,
+        allocatedJeans: 1000,
+        deadline: "02/08/2024",
+        progressValue: 80,
+    },
+    {
+        batchNo: 7,
+        totalJeans: 800,
+        allocatedJeans: 400,
+        deadline: "18/08/2024",
+        progressValue: 90,
+    },
+    {
+        batchNo: 8,
+        totalJeans: 3000,
+        allocatedJeans: 1500,
+        deadline: "05/09/2024",
+        progressValue: 100,
+    },
+];
+
+export const batchItemsPending = [
+    {
+        batchNo: 9,
+        totalJeans: 1800,
+        allocatedJeans: 1000,
+        deadline: "10/10/2024",
+        progressValue: 0,
+    },
+    {
+        batchNo: 10,
+        totalJeans: 2500,
+        allocatedJeans: 1200,
+        deadline: "20/10/2024",
+        progressValue: 0,
+    },
+    {
+        batchNo: 11,
+        totalJeans: 3000,
+        allocatedJeans: 2000,
+        deadline: "30/10/2024",
+        progressValue: 0,
+    },
+    {
+        batchNo: 12,
+        totalJeans: 2200,
+        allocatedJeans: 1800,
+        deadline: "05/11/2024",
+        progressValue: 0,
+    },
+    {
+        batchNo: 13,
+        totalJeans: 1800,
+        allocatedJeans: 1500,
+        deadline: "15/11/2024",
+        progressValue: 0,
+    },
+    {
+        batchNo: 14,
+        totalJeans: 2700,
+        allocatedJeans: 2200,
+        deadline: "25/11/2024",
+        progressValue: 0,
+    },
+];
+
+export const batchItemsCompleted = [
+    {
+        batchNo: 1,
+        totalJeans: 500,
+        allocatedJeans: 500,
+        deadline: "01/03/2024",
+        progressValue: 100,
+    },
+    {
+        batchNo: 2,
+        totalJeans: 800,
+        allocatedJeans: 800,
+        deadline: "10/03/2024",
+        progressValue: 100,
+    },
+    {
+        batchNo: 3,
+        totalJeans: 1200,
+        allocatedJeans: 1200,
+        deadline: "20/03/2024",
+        progressValue: 100,
+    },
+    {
+        batchNo: 4,
+        totalJeans: 1500,
+        allocatedJeans: 1500,
+        deadline: "30/03/2024",
+        progressValue: 100,
+    },
+    {
+        batchNo: 5,
+        totalJeans: 1000,
+        allocatedJeans: 1000,
+        deadline: "05/04/2024",
+        progressValue: 100,
+    },
+    {
+        batchNo: 6,
+        totalJeans: 2000,
+        allocatedJeans: 2000,
+        deadline: "15/04/2024",
+        progressValue: 100,
+    },
+];

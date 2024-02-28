@@ -15,6 +15,8 @@ import { theme } from './utils/theme';
 import NewBatch from './Pages/ColorMatching/component/NewBatch';
 import MyDashboard from './Pages/Employee/MyDashboard/MyDashboard';
 import Measurements from './Pages/Admin/Measurement/Measurements';
+import ColorMatchinEmployee from './Pages/Employee/ColorMarching/ColorMatchingEmployee.jsx';
+import ColorMatchingEmployee from './Pages/Employee/ColorMarching/ColorMatchingEmployee.jsx';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(null); // Use null as initial state
@@ -147,6 +149,7 @@ function App() {
               <>
                 <Route path='/' element={<Navigate to="/mydashboard" />} />
                 <Route path='/mydashboard' element={<MyDashboard sideBarWidth={sideBarWidth} />} />
+                <Route path='/color-matching' element={<ColorMatchingEmployee sideBarWidth={sideBarWidth} />} />
                 <Route path='/color-matching-future' element={<ColorMatching sideBarWidth={sideBarWidth} />} />
                 {/* <Route path='/*' element={<DashBoard />} /> */}
               </>

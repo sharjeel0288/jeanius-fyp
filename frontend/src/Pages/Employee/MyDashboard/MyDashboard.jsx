@@ -1,8 +1,16 @@
 import React from 'react'
+import Page from '../../../components/Layout/Page'
+import { Center, Heading } from '@chakra-ui/react'
 
-const MyDashboard = () => {
+const MyDashboard = ({ sideBarWidth }) => {
     return (
-        <div>MyDashboard</div>
+        <Page sideBarWidth={sideBarWidth}>
+            <Center>
+                <Heading>
+                    Coming Soon...
+                </Heading>
+            </Center>
+        </Page>
     )
 }
 
