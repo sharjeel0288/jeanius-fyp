@@ -41,7 +41,7 @@ import { BsFiletypePdf } from "react-icons/bs";
 import DeleteAlert from "../../../components/DeleteAlert";
 
 
-const UsersList = ({ branchNameSearch }) => {
+const ClientsList = ({ branchNameSearch }) => {
     const borderColor = useColorModeValue("gray.200", "gray.600");
     const [searchTerm, setSearchTerm] = useState("");
     const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
@@ -71,96 +71,46 @@ const UsersList = ({ branchNameSearch }) => {
         {
             fname: "Aslam",
             lname: "Butt",
-            role: "employee",
-            department: "Color Matching",
-            date: "20-02-2010",
             userName: "aslam.butt",
             password: "aslam@123",
+            phoneNo: "+920139123912",
+            email: "email@email.com",
         },
         {
             fname: "Farida",
             lname: "Khan",
-            role: "head",
-            department: "Measurements",
-            date: "15-06-2015",
             userName: "farida.khan",
             password: "farida@456",
+            phoneNo: "+920139123912",
+            email: "email@email.com",
         },
         {
             fname: "Nadeem",
             lname: "Malik",
-            role: "employee",
-            department: "Color Matching",
-            date: "03-11-2018",
             userName: "nadeem.malik",
             password: "nadeem@789",
+            phoneNo: "+920139123912",
+            email: "email@email.com",
         },
         {
             fname: "Saima",
             lname: "Akhtar",
-            role: "employee",
-            department: "Measurements",
-            date: "12-09-2012",
             userName: "saima.akhtar",
             password: "saima@987",
+            phoneNo: "+920139123912",
+            email: "email@email.com",
         },
         {
             fname: "Usman",
             lname: "Ahmed",
-            role: "head",
-            department: "Color Matching",
-            date: "08-04-2017",
             userName: "usman.ahmed",
             password: "usman@654",
-        },
-        {
-            fname: "Ayesha",
-            lname: "Riaz",
-            role: "employee",
-            department: "Measurements",
-            date: "23-01-2019",
-            userName: "ayesha.riaz",
-            password: "ayesha@321",
-        },
-        {
-            fname: "Imran",
-            lname: "Zafar",
-            role: "head",
-            department: "Color Matching",
-            date: "10-07-2014",
-            userName: "imran.zafar",
-            password: "imran@135",
-        },
-        {
-            fname: "Nazia",
-            lname: "Iqbal",
-            role: "employee",
-            department: "Color Matching",
-            date: "05-12-2016",
-            userName: "nazia.iqbal",
-            password: "nazia@246",
-        },
-        {
-            fname: "Kamran",
-            lname: "Akram",
-            role: "employee",
-            department: "Measurements",
-            date: "18-03-2021",
-            userName: "kamran.akram",
-            password: "kamran@789",
-        },
-        {
-            fname: "Saba",
-            lname: "Hussain",
-            role: "head",
-            department: "Measurements",
-            date: "30-08-2013",
-            userName: "saba.hussain",
-            password: "saba@567",
+            phoneNo: "+920139123912",
+            email: "email@email.com",
         },
     ];
-    
-    
+
+
 
 
     // Filter items based on search and selected category
@@ -289,7 +239,7 @@ const UsersList = ({ branchNameSearch }) => {
                             colorScheme="purple"
                             onClick={() => openDrawer("addNew")}
                         >
-                            New Employee
+                            New Client
                         </Button>
                     </ButtonGroup>
                 </Flex>
@@ -302,10 +252,8 @@ const UsersList = ({ branchNameSearch }) => {
                             <Th>Name</Th>
                             {/* <Th>address</Th> */}
                             <Th>user name</Th>
-                            <Th>role</Th>
-                            <Th>department</Th>
-                            <Th>joined date</Th>
-
+                            <Th>email</Th>
+                            <Th>contact</Th>
                             <Th>Actions</Th>
                         </Tr>
                     </Thead>
@@ -315,9 +263,8 @@ const UsersList = ({ branchNameSearch }) => {
                                 <Td>{item.fname + " " + item.lname}</Td>
                                 {/* <Td>{item.address}</Td> */}
                                 <Td>{item.userName}</Td>
-                                <Td>{item.role}</Td>
-                                <Td>{item.department}</Td>
-                                <Td>{item.date}</Td>
+                                <Td>{item.email}</Td>
+                                <Td>{item.phoneNo}</Td>
 
                                 <Td>
                                     <Menu>
@@ -393,4 +340,4 @@ const UsersList = ({ branchNameSearch }) => {
     );
 };
 
-export default UsersList;
+export default ClientsList;

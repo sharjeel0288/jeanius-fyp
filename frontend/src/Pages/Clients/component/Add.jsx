@@ -40,42 +40,20 @@ const Add = ({
                         />
                     </Box>
                     <Box>
-                        <FormLabel>Username</FormLabel>
+                        <FormLabel>Email</FormLabel>
                         <Input
-                            type='text'
+                            type='email'
                             style={textStyles}
                         />
                     </Box>
                     <Box>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel>Phone No.</FormLabel>
                         <Input
-                            type='text'
+                            type='number'
                             style={textStyles}
                         />
                     </Box>
-                    <Box>
-                        <FormLabel>Department</FormLabel>
-                        <Select placeholder='Select user department'>
-                            {deparments.map((department, index) => (
-                                <option value={department}>{department}</option>
-                            ))}
-                        </Select>
-                    </Box>
-                    <Box>
-                        <FormLabel>Role</FormLabel>
-                        <Select placeholder='Select user role'>
-                            {roles.map((role, index) => (
-                                <option value={role}>{role}</option>
-                            ))}
-                        </Select>
-                    </Box>
-                    <Box>
-                        <FormLabel>Joined Date</FormLabel>
-                        <Input
-                            type='date'
-                            style={textStyles}
-                        />
-                    </Box>
+
                 </SimpleGrid>
                 <ButtonGroup mt={4}>
                     <Button
@@ -89,7 +67,7 @@ const Add = ({
                         variant="solid"
                         colorScheme="purple"
                     >
-                        Add Employee
+                        Add Client
                     </Button>
                 </ButtonGroup>
             </FormControl>

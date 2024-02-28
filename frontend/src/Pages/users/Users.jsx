@@ -12,7 +12,7 @@ const Users = ({sideBarWidth}) => {
                     ml={{ base: 0, lg: sideBarWidth === "small" ? 14 : 60 }}
                     transition="margin 0.3s ease-in-out"
                 >
-                    <Heading>Users</Heading>
+                    <Heading>Employees</Heading>
                     <UsersList></UsersList>
                 </Box>
             </Container >

@@ -39,7 +39,7 @@ import { IoHomeOutline } from "react-icons/io5";
 import { TbRulerMeasure, TbColorSwatch } from "react-icons/tb";
 import { Link, useLocation } from "react-router-dom";
 import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
-import { FaUserPlus } from "react-icons/fa6";
+import { FaBuildingUser, FaUserPlus } from "react-icons/fa6";
 
 import logo from "../Logo/jeans.png";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
@@ -48,6 +48,7 @@ const LinkItems = [
   { name: "DashBoard", icon: IoHomeOutline, to: "/" },
   { name: "Color Matching", icon: TbColorSwatch, to: "/color-matching" },
   { name: "Measurements", icon: TbRulerMeasure, to: "/measurements" },
+  { name: "Clients", icon: FaBuildingUser, to: "/clients" },
   { name: "Users", icon: FaUserPlus, to: "/users" },
   // { name: 'Favourites', icon: FiStar },
   // { name: 'Settings', icon: FiSettings },

@@ -61,13 +61,24 @@ const Login = () => {
             localStorage.setItem("isUserLoggedIn", "true");
             setBtnLoading(false);
             window.location.href = "/";
+        } else if (email === "employee120@gmail.com" && password === "emp123") {
+            const dataToEncrypt = "employee";
+            const encryptedData = CryptoJS.AES.encrypt(
+                dataToEncrypt,
+                secretKey
+            ).toString();
+            localStorage.setItem("encryptedData", encryptedData);
+
+            localStorage.setItem("isUserLoggedIn", "true");
+            setBtnLoading(false);
+            window.location.href = "/";
         } else {
             toast({
-                title:"Error Loggin In",
-                description:"Please enter correct credentials.",
-                status:"error",
-                position:"top-right",
-                duration:3000,
+                title: "Error Loggin In",
+                description: "Please enter correct credentials.",
+                status: "error",
+                position: "top-right",
+                duration: 3000,
             })
             setBtnLoading(false);
         }

@@ -42,40 +42,20 @@ const View = ({ selectedItem, handleAddUpdateDeleteItem, branches, onClose }) =>
                         </Text>
                     </Box>
                     <Box>
-                        <FormLabel>Username</FormLabel>
+                        <FormLabel>Email</FormLabel>
                         <Text
                             style={textStyles}>
-                            {selectedItem.userName}
+                            {selectedItem.email}
                         </Text>
                     </Box>
                     <Box>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel>Phone No</FormLabel>
                         <Text
                             style={textStyles}>
-                            {selectedItem.password}
+                            {selectedItem.phoneNo}
                         </Text>
                     </Box>
-                    <Box>
-                        <FormLabel>Dedpartment</FormLabel>
-                        <Text
-                            style={textStyles}>
-                            {selectedItem.department}
-                        </Text>
-                    </Box>
-                    <Box>
-                        <FormLabel>Role</FormLabel>
-                        <Text
-                            style={textStyles}>
-                            {selectedItem.role}
-                        </Text>
-                    </Box>
-                    <Box>
-                        <FormLabel>Joined Date</FormLabel>
-                        <Text
-                            style={textStyles}>
-                            {selectedItem.date}
-                        </Text>
-                    </Box>
+
                 </SimpleGrid>
             </FormControl>
             <Button

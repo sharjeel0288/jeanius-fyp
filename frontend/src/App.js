@@ -10,6 +10,7 @@ import Login from './Pages/Login/Login';
 import ColorMatchingTemp from './Pages/ColorMatchingTemp/ColorMatchingTemp';
 // ... other imports
 import CryptoJS from 'crypto-js';
+import Clients from './Pages/Clients/Clients';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(null); // Use null as initial state
@@ -127,10 +128,24 @@ function App() {
                 <Route path='/' element={<Navigate to="/dashboard" />} />
                 {/* <Route path='/sign-in' element={<Login />} /> */}
                 <Route path='/dashboard' element={<DashBoard sideBarWidth={sideBarWidth} />} />
-                <Route path='/color-matching-future' element={<ColorMatching sideBarWidth={sideBarWidth} />} />
-                <Route path='/color-matching' element={<ColorMatchingTemp sideBarWidth={sideBarWidth} />} />
+                {/* <Route path='/color-matching-future' element={<ColorMatching sideBarWidth={sideBarWidth} />} /> */}
+                <Route path='/color-matching' element={<ColorMatching sideBarWidth={sideBarWidth} />} />
+                {/* <Route path='/color-matching' element={<ColorMatchingTemp sideBarWidth={sideBarWidth} />} /> */}
                 <Route path='/measurements' element={<Measurements sideBarWidth={sideBarWidth} />} />
                 <Route path='/users' element={<Users sideBarWidth={sideBarWidth} />} />
+                <Route path='/clients' element={<Clients sideBarWidth={sideBarWidth} />} />
+                <Route path='/*' element={<DashBoard />} />
+              </>
+            )}
+            {department === "employee" && (
+              <>
+                <Route path='/' element={<Navigate to="/dashboard" />} />
+                {/* <Route path='/sign-in' element={<Login />} /> */}
+                <Route path='/dashboard' element={<DashBoard sideBarWidth={sideBarWidth} />} />
+                <Route path='/color-matching-future' element={<ColorMatching sideBarWidth={sideBarWidth} />} />
+                {/* <Route path='/color-matching' element={<ColorMatchingTemp sideBarWidth={sideBarWidth} />} /> */}
+                {/* <Route path='/measurements' element={<Measurements sideBarWidth={sideBarWidth} />} /> */}
+                {/* <Route path='/users' element={<Users sideBarWidth={sideBarWidth} />} /> */}
                 <Route path='/*' element={<DashBoard />} />
               </>
             )}
