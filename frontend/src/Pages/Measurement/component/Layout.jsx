@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { MdUpload } from "react-icons/md";
+import { MdCamera, MdUpload } from "react-icons/md";
 import { getMeasurements } from "../../../api/measurementAPI";
 import {
   Box,
@@ -23,27 +23,22 @@ import {
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
-// import Drawers from './Drawer';
+import { IoReload } from "react-icons/io5";
 import Results from "./Results";
-import { SlReload } from "react-icons/sl";
-import { PiImageSquareFill } from "react-icons/pi";
-import { useBgColor, usePlaceholderColor } from "../../../utils/constants";
+
 
 const Layout = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [cmValue, setCmValue] = useState(1);
   const [formData, setFormData] = useState(new FormData());
-
-  const handleDrawerOpen = () => {
-    setIsDrawerOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setIsDrawerOpen(false);
-  };
-
   const [selectedImage, setSelectedImage] = useState(null);
+  const [measurementResult, setMeasurementResult] = useState(null);
+  const [btnLoading, setBtnLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isloaded, setIsLoaded] = useState(false);
+
   const fileInputRef = useRef(null);
+  const toast = useToast();
 
   const handleImageChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -55,18 +50,58 @@ const Layout = () => {
       reader.readAsDataURL(selectedFile);
     }
   };
+
   const handleMeasurementChange = (event) => {
     const inputValue = event.target.value;
     if (/^\d*\.?\d*$/.test(inputValue) || inputValue === "") {
       setCmValue(inputValue); // Update the state with the validated input
     }
   };
-  const [measurementResult, setMeasurementResult] = useState(null);
-  const [btnLoading, setBtnLoading] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isloaded, setIsLoaded] = useState(false);
 
-  const toast = useToast();
+  const captureFromCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      video.autoplay = true; // Add this line to ensure the video starts playing automatically
+      video.play();
+  
+      // Create a container to display the camera stream
+      const cameraContainer = document.createElement('div');
+      cameraContainer.appendChild(video);
+      document.body.appendChild(cameraContainer);
+  
+      // Create a button to capture an image
+      const captureButton = document.createElement('button');
+      captureButton.textContent = 'Capture Image';
+      captureButton.addEventListener('click', () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const context = canvas.getContext('2d');
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg');
+        setSelectedImage(dataUrl);
+        // Stop the video stream
+        stream.getTracks().forEach(track => track.stop());
+        // Remove the camera container
+        cameraContainer.remove();
+      });
+      cameraContainer.appendChild(captureButton);
+    } catch (error) {
+      console.error('Error capturing image from camera:', error);
+      toast({
+        title: 'Error Capturing Image',
+        description: 'An error occurred while capturing image from camera.',
+        status: 'error',
+        duration: 5000,
+        position: 'top-right',
+        isClosable: true,
+      });
+    }
+  };
+  
+
   const handleSubmitButtonClick = async () => {
     try {
       if (cmValue <= 0 || cmValue === "" || parseFloat(cmValue) <= 0) {
@@ -81,7 +116,6 @@ const Layout = () => {
         });
         return;
       }
-      console.log("Button clicked! Start Processing...");
       setBtnLoading(true);
       setIsProcessing(true);
       setIsLoaded(false);
@@ -91,12 +125,11 @@ const Layout = () => {
       updatedFormData.append("reference_height", cmValue);
       setFormData(updatedFormData);
 
-      console.log("payload-------------: ", formData);
       const result = await getMeasurements(updatedFormData);
       setMeasurementResult(result);
       toast({
         title: "Processing Successful",
-        description: "Image measurment calculated successfully.",
+        description: "Image measurement calculated successfully.",
         status: "success",
         duration: 5000,
         position: "top-right",
@@ -105,7 +138,6 @@ const Layout = () => {
       setIsLoaded(true);
     } catch (error) {
       console.error("Error in submission:", error);
-      // Check if the error response contains a message from the server
       const errorMessage =
         error.response?.data?.message ||
         "An error occurred while processing the image.";
@@ -127,12 +159,12 @@ const Layout = () => {
   const handleButtonClick = () => {
     fileInputRef.current.click();
   };
+
   return (
     <Box>
       <Flex justify="space-between"></Flex>
       <Flex gap={4} direction={{ base: "column", lg: "row" }} w="100%">
         <Box
-          bg={useBgColor}
           borderRadius="lg"
           p={4}
           minW="20%"
@@ -156,6 +188,17 @@ const Layout = () => {
           ) : (
             <Text>No image selected</Text>
           )}
+          <Button
+            variant="solid"
+            colorScheme="purple"
+            onClick={captureFromCamera}
+            mt={2}
+            w="100%"
+            leftIcon={<MdCamera />}
+            isDisabled={btnLoading}
+          >
+            Capture From Camera
+          </Button>
           <label htmlFor="fileInput">
             <Button
               variant="solid"
@@ -163,7 +206,7 @@ const Layout = () => {
               onClick={handleButtonClick}
               mt={2}
               w="100%"
-              leftIcon={selectedImage ? <SlReload /> : <PiImageSquareFill />}
+              leftIcon={selectedImage ? <IoReload /> : <MdUpload />}
               isDisabled={btnLoading}
             >
               {selectedImage ? "Upload Image Again" : "Upload Image"}
@@ -184,7 +227,6 @@ const Layout = () => {
               placeholder="Enter length in cm"
               mt={4}
               borderColor="purple.500"
-              _placeholder={{ color: usePlaceholderColor }}
               isDisabled={btnLoading}
             />
           )}
@@ -209,7 +251,6 @@ const Layout = () => {
             fadeDuration={0.6}
           >
             <Box flex={4}>
-              {/* <ImageUpload /> */}
               {measurementResult && (
                 <Results
                   imgSelected={selectedImage}
@@ -220,8 +261,6 @@ const Layout = () => {
           </Skeleton>
         )}
       </Flex>
-
-      {/* <Drawers isOpen={isDrawerOpen} onClose={handleDrawerClose} /> */}
     </Box>
   );
 };
