@@ -37,6 +37,12 @@ const Layout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isloaded, setIsLoaded] = useState(false);
 
+  const [liveImage, setLiveImage] = useState(false);
+  const [isFrontCamera, setIsFrontCamera] = useState(false);
+
+  const liveImageRef = useRef(null);
+  const mediaStreamRef = useRef(null);
+
   const fileInputRef = useRef(null);
   const toast = useToast();
 
@@ -58,49 +64,48 @@ const Layout = () => {
     }
   };
 
-  const captureFromCamera = async () => {
+  const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      const video = document.createElement('video');
-      video.srcObject = stream;
-      video.autoplay = true; // Add this line to ensure the video starts playing automatically
-      video.play();
-  
-      // Create a container to display the camera stream
-      const cameraContainer = document.createElement('div');
-      cameraContainer.appendChild(video);
-      document.body.appendChild(cameraContainer);
-  
-      // Create a button to capture an image
-      const captureButton = document.createElement('button');
-      captureButton.textContent = 'Capture Image';
-      captureButton.addEventListener('click', () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const context = canvas.getContext('2d');
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL('image/jpeg');
-        setSelectedImage(dataUrl);
-        // Stop the video stream
-        stream.getTracks().forEach(track => track.stop());
-        // Remove the camera container
-        cameraContainer.remove();
+      setLiveImage(true);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: isFrontCamera ? 'user' : 'environment',
+        },
       });
-      cameraContainer.appendChild(captureButton);
+      liveImageRef.current.srcObject = stream;
+      mediaStreamRef.current = stream;
     } catch (error) {
-      console.error('Error capturing image from camera:', error);
-      toast({
-        title: 'Error Capturing Image',
-        description: 'An error occurred while capturing image from camera.',
-        status: 'error',
-        duration: 5000,
-        position: 'top-right',
-        isClosable: true,
+      console.error('Error accessing the camera:', error);
+    }
+  }
+
+  const takePicture = () => {
+    if (!mediaStreamRef.current) {
+      startCamera();
+    } else {
+      const canvas = document.createElement('canvas');
+      canvas.width = liveImageRef.current.videoWidth;
+      canvas.height = liveImageRef.current.videoHeight;
+      canvas
+        .getContext('2d')
+        .drawImage(liveImageRef.current, 0, 0, canvas.width, canvas.height);
+      const image = canvas.toDataURL('image/png');
+      setSelectedImage(image)
+      // setcaptureImageButton("Retake Image");
+      stopMediaStream();
+      setLiveImage(false);
+      stopMediaStream()
+
+      // setCurrentStep(2); // Move to the next step
+    }
+  };
+  const stopMediaStream = () => {
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => {
+        track.stop();
       });
     }
   };
-  
 
   const handleSubmitButtonClick = async () => {
     try {
@@ -188,16 +193,40 @@ const Layout = () => {
           ) : (
             <Text>No image selected</Text>
           )}
+          {liveImage ? (
+            <Flex
+              direction="column"
+              align="center"
+              mb={4}
+            >
+              <video ref={liveImageRef} autoPlay playsInline />
+              <Button
+                variant="solid"
+                colorScheme="green"
+                onClick={takePicture}
+              >
+                Capture Image
+              </Button>
+            </Flex>
+
+          ) : (
+            null
+          )}
+
           <Button
             variant="solid"
             colorScheme="purple"
-            onClick={captureFromCamera}
+            onClick={() => {
+              setSelectedImage(null);
+              setLiveImage(null)
+              startCamera()
+            }}
             mt={2}
             w="100%"
             leftIcon={<MdCamera />}
             isDisabled={btnLoading}
           >
-            Capture From Camera
+            {selectedImage ? "Capture Image Again" : "Capture From Camera"}
           </Button>
           <label htmlFor="fileInput">
             <Button
@@ -243,25 +272,27 @@ const Layout = () => {
             </Button>
           )}
         </Box>
-        {isProcessing && (
-          <Skeleton
-            isLoaded={isloaded}
-            startColor="purple.200"
-            endColor="purple.300"
-            fadeDuration={0.6}
-          >
-            <Box flex={4}>
-              {measurementResult && (
-                <Results
-                  imgSelected={selectedImage}
-                  measurementsData={measurementResult}
-                />
-              )}
-            </Box>
-          </Skeleton>
-        )}
-      </Flex>
-    </Box>
+        {
+          isProcessing && (
+            <Skeleton
+              isLoaded={isloaded}
+              startColor="purple.200"
+              endColor="purple.300"
+              fadeDuration={0.6}
+            >
+              <Box flex={4}>
+                {measurementResult && (
+                  <Results
+                    imgSelected={selectedImage}
+                    measurementsData={measurementResult}
+                  />
+                )}
+              </Box>
+            </Skeleton>
+          )
+        }
+      </Flex >
+    </Box >
   );
 };
 
