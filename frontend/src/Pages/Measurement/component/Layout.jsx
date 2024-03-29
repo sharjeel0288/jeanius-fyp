@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { MdUpload } from "react-icons/md";
+import { MdCamera, MdUpload } from "react-icons/md";
 import { getMeasurements } from "../../../api/measurementAPI";
 import {
   Box,
@@ -23,27 +23,28 @@ import {
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
-// import Drawers from './Drawer';
+import { IoReload } from "react-icons/io5";
 import Results from "./Results";
-import { SlReload } from "react-icons/sl";
-import { PiImageSquareFill } from "react-icons/pi";
-import { useBgColor, usePlaceholderColor } from "../../../utils/constants";
+
 
 const Layout = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [cmValue, setCmValue] = useState(1);
   const [formData, setFormData] = useState(new FormData());
-
-  const handleDrawerOpen = () => {
-    setIsDrawerOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setIsDrawerOpen(false);
-  };
-
   const [selectedImage, setSelectedImage] = useState(null);
+  const [measurementResult, setMeasurementResult] = useState(null);
+  const [btnLoading, setBtnLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isloaded, setIsLoaded] = useState(false);
+
+  const [liveImage, setLiveImage] = useState(false);
+  const [isFrontCamera, setIsFrontCamera] = useState(false);
+
+  const liveImageRef = useRef(null);
+  const mediaStreamRef = useRef(null);
+
   const fileInputRef = useRef(null);
+  const toast = useToast();
 
   const handleImageChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -55,18 +56,57 @@ const Layout = () => {
       reader.readAsDataURL(selectedFile);
     }
   };
+
   const handleMeasurementChange = (event) => {
     const inputValue = event.target.value;
     if (/^\d*\.?\d*$/.test(inputValue) || inputValue === "") {
       setCmValue(inputValue); // Update the state with the validated input
     }
   };
-  const [measurementResult, setMeasurementResult] = useState(null);
-  const [btnLoading, setBtnLoading] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isloaded, setIsLoaded] = useState(false);
 
-  const toast = useToast();
+  const startCamera = async () => {
+    try {
+      setLiveImage(true);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: isFrontCamera ? 'user' : 'environment',
+        },
+      });
+      liveImageRef.current.srcObject = stream;
+      mediaStreamRef.current = stream;
+    } catch (error) {
+      console.error('Error accessing the camera:', error);
+    }
+  }
+
+  const takePicture = () => {
+    if (!mediaStreamRef.current) {
+      startCamera();
+    } else {
+      const canvas = document.createElement('canvas');
+      canvas.width = liveImageRef.current.videoWidth;
+      canvas.height = liveImageRef.current.videoHeight;
+      canvas
+        .getContext('2d')
+        .drawImage(liveImageRef.current, 0, 0, canvas.width, canvas.height);
+      const image = canvas.toDataURL('image/png');
+      setSelectedImage(image)
+      // setcaptureImageButton("Retake Image");
+      stopMediaStream();
+      setLiveImage(false);
+      stopMediaStream()
+
+      // setCurrentStep(2); // Move to the next step
+    }
+  };
+  const stopMediaStream = () => {
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => {
+        track.stop();
+      });
+    }
+  };
+
   const handleSubmitButtonClick = async () => {
     try {
       if (cmValue <= 0 || cmValue === "" || parseFloat(cmValue) <= 0) {
@@ -81,7 +121,6 @@ const Layout = () => {
         });
         return;
       }
-      console.log("Button clicked! Start Processing...");
       setBtnLoading(true);
       setIsProcessing(true);
       setIsLoaded(false);
@@ -91,12 +130,11 @@ const Layout = () => {
       updatedFormData.append("reference_height", cmValue);
       setFormData(updatedFormData);
 
-      console.log("payload-------------: ", formData);
       const result = await getMeasurements(updatedFormData);
       setMeasurementResult(result);
       toast({
         title: "Processing Successful",
-        description: "Image measurment calculated successfully.",
+        description: "Image measurement calculated successfully.",
         status: "success",
         duration: 5000,
         position: "top-right",
@@ -105,7 +143,6 @@ const Layout = () => {
       setIsLoaded(true);
     } catch (error) {
       console.error("Error in submission:", error);
-      // Check if the error response contains a message from the server
       const errorMessage =
         error.response?.data?.message ||
         "An error occurred while processing the image.";
@@ -127,12 +164,12 @@ const Layout = () => {
   const handleButtonClick = () => {
     fileInputRef.current.click();
   };
+
   return (
     <Box>
       <Flex justify="space-between"></Flex>
       <Flex gap={4} direction={{ base: "column", lg: "row" }} w="100%">
         <Box
-          bg={useBgColor}
           borderRadius="lg"
           p={4}
           minW="20%"
@@ -156,6 +193,41 @@ const Layout = () => {
           ) : (
             <Text>No image selected</Text>
           )}
+          {liveImage ? (
+            <Flex
+              direction="column"
+              align="center"
+              mb={4}
+            >
+              <video ref={liveImageRef} autoPlay playsInline />
+              <Button
+                variant="solid"
+                colorScheme="green"
+                onClick={takePicture}
+              >
+                Capture Image
+              </Button>
+            </Flex>
+
+          ) : (
+            null
+          )}
+
+          <Button
+            variant="solid"
+            colorScheme="purple"
+            onClick={() => {
+              setSelectedImage(null);
+              setLiveImage(null)
+              startCamera()
+            }}
+            mt={2}
+            w="100%"
+            leftIcon={<MdCamera />}
+            isDisabled={btnLoading}
+          >
+            {selectedImage ? "Capture Image Again" : "Capture From Camera"}
+          </Button>
           <label htmlFor="fileInput">
             <Button
               variant="solid"
@@ -163,7 +235,7 @@ const Layout = () => {
               onClick={handleButtonClick}
               mt={2}
               w="100%"
-              leftIcon={selectedImage ? <SlReload /> : <PiImageSquareFill />}
+              leftIcon={selectedImage ? <IoReload /> : <MdUpload />}
               isDisabled={btnLoading}
             >
               {selectedImage ? "Upload Image Again" : "Upload Image"}
@@ -184,7 +256,6 @@ const Layout = () => {
               placeholder="Enter length in cm"
               mt={4}
               borderColor="purple.500"
-              _placeholder={{ color: usePlaceholderColor }}
               isDisabled={btnLoading}
             />
           )}
@@ -201,28 +272,27 @@ const Layout = () => {
             </Button>
           )}
         </Box>
-        {isProcessing && (
-          <Skeleton
-            isLoaded={isloaded}
-            startColor="purple.200"
-            endColor="purple.300"
-            fadeDuration={0.6}
-          >
-            <Box flex={4}>
-              {/* <ImageUpload /> */}
-              {measurementResult && (
-                <Results
-                  imgSelected={selectedImage}
-                  measurementsData={measurementResult}
-                />
-              )}
-            </Box>
-          </Skeleton>
-        )}
-      </Flex>
-
-      {/* <Drawers isOpen={isDrawerOpen} onClose={handleDrawerClose} /> */}
-    </Box>
+        {
+          isProcessing && (
+            <Skeleton
+              isLoaded={isloaded}
+              startColor="purple.200"
+              endColor="purple.300"
+              fadeDuration={0.6}
+            >
+              <Box flex={4}>
+                {measurementResult && (
+                  <Results
+                    imgSelected={selectedImage}
+                    measurementsData={measurementResult}
+                  />
+                )}
+              </Box>
+            </Skeleton>
+          )
+        }
+      </Flex >
+    </Box >
   );
 };
 
