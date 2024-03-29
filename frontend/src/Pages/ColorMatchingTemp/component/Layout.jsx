@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { MdCamera, MdInfoOutline, MdUpload } from 'react-icons/md';
+import { MdInfoOutline, MdUpload } from 'react-icons/md';
 import { Badge, Box, Button, Container, Flex, Grid, Heading, Image, Input, SimpleGrid, Skeleton, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr, VStack, useColorModeValue, useToast } from '@chakra-ui/react';
 import Details from './Details';
 import Drawers from './Drawer';
@@ -21,107 +21,17 @@ const Layout = () => {
     //     setIsDrawerOpen(false);
     // };
 
-    const [selectedImage1, setSelectedImage1] = useState(null);
+    const [selectedImage1, setSelectedImage] = useState(null);
     const [selectedImage2, setSelectedImage2] = useState(null);
     const fileInputRef = useRef(null);
     const fileInputRef2 = useRef(null);
-
-    const [isFrontCamera, setIsFrontCamera] = useState(false);
-    const liveImage1Ref = useRef(null);
-    const liveImage2Ref = useRef(null);
-    const [liveImage1, setLiveImage1] = useState(false);
-    const [liveImage2, setLiveImage2] = useState(false);
-
-    const mediaStreamRef = useRef(null);
-
-    const startCamera1 = async () => {
-        try {
-            setLiveImage1(true);
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: isFrontCamera ? 'user' : 'environment',
-                },
-            });
-            liveImage1Ref.current.srcObject = stream;
-            mediaStreamRef.current = stream;
-        } catch (error) {
-            console.error('Error accessing the camera:', error);
-        }
-    }
-    const startCamera2 = async () => {
-        try {
-            setLiveImage2(true);
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: isFrontCamera ? 'user' : 'environment',
-                },
-            });
-            liveImage2Ref.current.srcObject = stream;
-            mediaStreamRef.current = stream;
-        } catch (error) {
-            console.error('Error accessing the camera:', error);
-        }
-    }
-
-    const takePicture1 = () => {
-        if (!mediaStreamRef.current) {
-            startCamera1();
-        } else {
-            const canvas = document.createElement('canvas');
-            canvas.width = liveImage1Ref.current.videoWidth;
-            canvas.height = liveImage1Ref.current.videoHeight;
-            canvas
-                .getContext('2d')
-                .drawImage(liveImage1Ref.current, 0, 0, canvas.width, canvas.height);
-            const image = canvas.toDataURL('image/png');
-            setSelectedImage1(image)
-            // setcaptureImageButton("Retake Image");
-            stopMediaStream1();
-            setLiveImage1(false);
-            stopMediaStream1();
-            // setCurrentStep(2); // Move to the next step
-        }
-    };
-    const takePicture2 = () => {
-        if (!mediaStreamRef.current) {
-            startCamera2();
-        } else {
-            const canvas = document.createElement('canvas');
-            canvas.width = liveImage2Ref.current.videoWidth;
-            canvas.height = liveImage2Ref.current.videoHeight;
-            canvas
-                .getContext('2d')
-                .drawImage(liveImage2Ref.current, 0, 0, canvas.width, canvas.height);
-            const image = canvas.toDataURL('image/png');
-            setSelectedImage2(image)
-            // setcaptureImageButton("Retake Image");
-            stopMediaStream2();
-            setLiveImage2(false);
-            stopMediaStream2();
-            // setCurrentStep(2); // Move to the next step
-        }
-    };
-    const stopMediaStream1 = () => {
-        if (mediaStreamRef.current) {
-            mediaStreamRef.current.getTracks().forEach((track) => {
-                track.stop();
-            });
-        }
-    };
-    const stopMediaStream2 = () => {
-        if (mediaStreamRef.current) {
-            mediaStreamRef.current.getTracks().forEach((track) => {
-                track.stop();
-            });
-        }
-    };
 
     const handleImageChange1 = (event) => {
         const selectedFile = event.target.files[0];
         if (selectedFile) {
             const reader = new FileReader();
             reader.onload = () => {
-                setSelectedImage1(reader.result);
+                setSelectedImage(reader.result);
             };
             reader.readAsDataURL(selectedFile);
         }
@@ -193,12 +103,12 @@ const Layout = () => {
             const errorMessage = error.response?.data?.message || 'An error occurred while processing the image.';
 
             toast({
-                title: 'Error Processing Image',
-                description: errorMessage,
-                status: 'error',
-                duration: 5000,
-                position: 'top-right',
-                isClosable: true,
+              title: 'Error Processing Image',
+              description: errorMessage,
+              status: 'error',
+              duration: 5000,
+              position: 'top-right',
+              isClosable: true,
             });
             setIsProcessing(false);
         } finally {
@@ -267,41 +177,6 @@ const Layout = () => {
                     ) : (
                         <Text>No image selected</Text>
                     )}
-                    {liveImage1 ? (
-                        <Flex
-                            direction="column"
-                            align="center"
-                            mb={4}
-                        >
-                            <video ref={liveImage1Ref} autoPlay playsInline />
-                            <Button
-                                variant="solid"
-                                colorScheme="green"
-                                onClick={takePicture1}
-                            >
-                                Capture Image
-                            </Button>
-                        </Flex>
-
-                    ) : (
-                        null
-                    )}
-
-                    <Button
-                        variant="solid"
-                        colorScheme="purple"
-                        onClick={() => {
-                            setSelectedImage1(null);
-                            setLiveImage1(null)
-                            startCamera1()
-                        }}
-                        mt={2}
-                        w="100%"
-                        leftIcon={<MdCamera />}
-                    // isDisabled={btnLoading}
-                    >
-                        {selectedImage1 ? "Capture Image Again" : "Capture From Camera"}
-                    </Button>
                     <label htmlFor="fileInput">
                         <Button
                             variant="solid"
@@ -349,41 +224,6 @@ const Layout = () => {
                     ) : (
                         <Text>No image selected</Text>
                     )}
-                    {liveImage2 ? (
-                        <Flex
-                            direction="column"
-                            align="center"
-                            mb={4}
-                        >
-                            <video ref={liveImage2Ref} autoPlay playsInline />
-                            <Button
-                                variant="solid"
-                                colorScheme="green"
-                                onClick={takePicture2}
-                            >
-                                Capture Image
-                            </Button>
-                        </Flex>
-
-                    ) : (
-                        null
-                    )}
-
-                    <Button
-                        variant="solid"
-                        colorScheme="purple"
-                        onClick={() => {
-                            setSelectedImage2(null);
-                            setLiveImage2(null)
-                            startCamera2()
-                        }}
-                        mt={2}
-                        w="100%"
-                        leftIcon={<MdCamera />}
-                    // isDisabled={btnLoading}
-                    >
-                        {selectedImage2 ? "Capture Image Again" : "Capture From Camera"}
-                    </Button>
                     <label htmlFor="fileInput">
                         <Button
                             variant="solid"
