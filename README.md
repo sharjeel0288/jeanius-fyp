@@ -1,47 +1,77 @@
-**Jeanius Digital** 💡👖
+# Jeanius Digital
 
-**Overview:**
-Jeanius Digital is an innovative platform revolutionizing the jeans industry through AI and VR technologies. It automates quality checks, color matching, design creation, and virtual try-on processes, streamlining production and enhancing customer satisfaction. 🚀🎨
+## Project Report
 
-**Features:**
-- Automated quality checks ensure precision and consistency in jeans production. ✅👖
-- AI-driven color shade matching guarantees accurate color matching to customer preferences. 🎨🔍
-- GANs facilitate rapid jeans design creation, reducing design time and boosting creativity. 🤖✏️
-- VR try-on experience enables customers to try on jeans virtually, enhancing the shopping experience. 🕶️👖
+### Group Members:
+- Sharjeel Ahmed 20K-0288
+- Shazim Ali Mughal 20K-1032
+- Sameer Raza 20K-0439
 
-**Target Market:**
-Jeanius Digital serves jeans manufacturers, designers, and retailers seeking to streamline production processes, enhance quality control, and offer a personalized shopping experience. 🎯🛍️
+### Instructor:
+Miss Sumiyah Zahid
 
-**Management Team:**
-- Co-founder & CEO: Sharjeel Ahmed
-- Co-founder & CEO: Shazim Ali Mughal
-- Co-founder & CTO: Mohammad Ahmed
+### Course:
+Deep Learning For Perception
 
-**Financial Projections:**
-The financial projections detail the company's anticipated financial performance, including sources and uses of funds, pro forma income statements, balance sheets, cash flows, and ratio analysis. 💰📊
+## Objective
 
-**Dataset Collection and Segmentation:**
-The dataset used for training the Jeanius Digital AI models was collected through multiple channels to ensure diversity and representativeness. 📸🔄 The annotation and semantic segmentation of the dataset were performed using Roboflow, ensuring accurate labeling and segmentation for training the AI models. 🤖🔍
+The objective of Jeanius Digital is to revolutionize the jeans industry by developing an AI-powered platform that streamlines production processes and enhances quality control. We aim to achieve this by automating quality control procedures such as color matching and measurements.
 
-**Getting Started:**
-To get started with Jeanius Digital:
-1. Clone the repository: `git clone https://github.com/jeanius-digital.git`
-2. Follow the setup instructions in the `/docs` directory.
-3. Explore the source code and documentation to understand the platform's functionality and architecture.
-4. Contribute to the project by submitting bug reports, feature requests, or pull requests. 🛠️👩‍💻
+## Problem Statement
 
-**Contributing:**
-We welcome contributions from the community to enhance Jeanius Digital. To contribute:
-1. Fork the repository.
-2. Create a new branch: `git checkout -b feature/my-feature`.
-3. Commit your changes: `git commit -am 'Add new feature'`.
-4. Push to the branch: `git push origin feature/my-feature`.
-5. Submit a pull request with a detailed description of your changes. 🚀🔧
+- Manual quality control processes leading to errors and inconsistencies in jeans production.
+- Lengthy design cycles and delays in responding to market trends.
+- Inability to provide personalized experiences and virtual try-ons for customers.
 
-**License:**
-Jeanius Digital is licensed under the [MIT License](/LICENSE). 📜
+By leveraging AI and computer vision technologies, Jeanius Digital aims to automate these processes, improve efficiency, and enhance accuracy.
 
-**Contact:**
-For inquiries or support, please contact our team at contact@jeaniusdigital.com. 📧
+## Methodology
 
-**Thank you for choosing Jeanius Digital!** 🙌👖
+### Data Acquisition and Preprocessing
+- **Data Collection:** Gather denim images from various sources, including local inventory, manufacturer catalogs, and online databases.
+- **Image Preprocessing:** Use the OpenCV library to load and resize images to a standard size. Convert images from BGR to HSV color space for color segmentation.
+
+### Color Segmentation and Object Detection
+- **Color Definition:** Define HSV color ranges for denim categories.
+- **Color Segmentation:** Segment denim colors using defined ranges. Apply thresholding and contour detection for object identification.
+- **Bounding Boxes and Labels:** Draw bounding boxes around segmented objects and add labels for visual identification.
+
+### User Interaction
+- Interactive user dashboard for multiple options, the user can select to run color matching model or measurement model.
+- After processing the relevant results are shown to the user.
+
+### System Integration and Testing
+- **Integration:** Integrate color matching and jeans measurements models into Jeanius Digital's web app.
+- **Testing and Validation:** Test system performance with sample denim images. Validate accuracy against ground truth data and from a denim manufacturer.
+
+## Results
+
+- **Results Evaluation:** Evaluate system performance in terms of accuracy, speed, and user experience.
+- **Optimization:** Fine-tune color matching and measurements models for improved accuracy. Implement weighted thresholding for better accuracy.
+
+## Installation
+
+To get started, clone this repository using the `git clone` command.
+
+## Usage
+
+To use Jeanius Digital :
+
+### Backend
+1. Navigate to backend folder `cd backend`
+2. Install the dependencies listed in `requirements.txt` using `pip install -r requirements.txt`.
+3. Run the backend using the command: `python manage.py runserver `
+
+### Frontend
+1. Navigate to frontend folder `cd frontend`.
+2. Install all dependencies using `npm install`.
+3. Run the front end using: `npm start`.
+
+## Technologies Used
+
+- React for frontend and user interface.
+- Python for backend.
+
+## Results Presentation
+
+Results are shown to the user within the web app.
